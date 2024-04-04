@@ -19,15 +19,26 @@ generator erd {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  password     String
-  token        String
-  refreshToken String
-  tokens       Token[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  id             String    @id @default(uuid())
+  email          String    @unique
+  hashedPassword String
+  refreshToken   String?
+  tokens         Token[]
+  entity         Entity?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+}
+
+model Entity {
+  id        String    @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  firstName String?
+  lastName  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model Token {
