@@ -11,4 +11,10 @@ export class AuthController {
   async localSignUp(@Body() dto: CreateUserDto) {
     return this.authService.localSignUp(dto);
   }
+
+  @Post('local/signin')
+  @HttpCode(HttpStatus.OK)
+  async localSignIn(@Body() dto: CreateUserDto) {
+    return this.authService.localSignIn(dto);
+  }
 }

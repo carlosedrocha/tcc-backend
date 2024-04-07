@@ -1,12 +1,48 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { hashPassword } from 'src/helper/hash/password.hash';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import { hashPassword, verifyPassword } from 'src/helper/hash/password.hash';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
+import { SignInDto } from './dto/auth';
 import { CreateUserDto } from './dto/auth/signup/create-user.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+  ) {}
+  async localSignIn(dto: SignInDto): Promise<any> {
+    try {
+      const user = await this.userService.findUserByEmail(dto.email);
+      if (!user) {
+        throw new UnauthorizedException('Usuário ou Senha Inválidos');
+      }
+      if (await verifyPassword(dto.password, user.hashedPassword)) {
+        return await this.generateToken(user);
+      }
+    } catch (error) {
+      throw new UnauthorizedException('Usuário ou Senha Inválidos');
+    }
+  }
 
+  async generateToken(payload: User) {
+    return {
+      bearer_token: this.jwtService.sign(
+        { email: payload.email },
+        {
+          secret: process.env.JWT_SECRET,
+          expiresIn: '360s',
+        },
+      ),
+    };
+  }
   async localSignUp(dto: CreateUserDto) {
     try {
       const checkEmail = await this.prisma.user.findUnique({
