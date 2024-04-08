@@ -41,6 +41,46 @@ model Token {
   deletedAt DateTime?
 }
 
+model Item {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  type        ItemType
+  stock       Int
+  dishes      Dish[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+model Dish {
+  id          String     @id @default(uuid())
+  name        String
+  items       Item[]
+  description String
+  category    Category[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  dish      Dish?     @relation(fields: [dishId], references: [id])
+  dishId    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+//Enum
+enum ItemType {
+  drink
+  perishable
+}
+
 // model Entity {
 //   id   String @id @default(uuid())
 //   name String
