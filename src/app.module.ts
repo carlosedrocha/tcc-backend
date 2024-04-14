@@ -5,6 +5,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { ItemModule } from './modules/item/item.module';
+import { DishModule } from './modules/dish/dish.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ItemModule } from './modules/item/item.module';
     PrismaModule,
     CategoryModule,
     ItemModule,
+    DishModule,
   ],
   providers: [],
 })

@@ -34,8 +34,8 @@ model User {
 
 model Entity {
   id        String    @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @unique
   firstName String?
   lastName  String?
   createdAt DateTime  @default(now())
@@ -59,16 +59,17 @@ model Token {
 }
 
 model Category {
-  id        String    @id @default(uuid())
-  name      String
+  id          String    @id @default(uuid())
+  name        String
   description String?
   observation String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  dish        Dish?     @relation(fields: [dishId], references: [id])
+  dishId      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   @@map("categories")
-
 }
 
 model Item {
@@ -77,11 +78,25 @@ model Item {
   description String?
   price       Float?
   type        ItemType?
+  dish        Dish?     @relation(fields: [dishId], references: [id])
+  dishId      String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
   @@map("items")
+}
+
+model Dish {
+  id          String     @id @default(uuid())
+  name        String
+  items       Item[]
+  description String?
+  categories  Category[]
+  price      Float?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
 }
 
 //Enum
