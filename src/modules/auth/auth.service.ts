@@ -34,11 +34,12 @@ export class AuthService {
 
   async generateToken(payload: User) {
     return {
+      userId: payload.id,
       bearer_token: this.jwtService.sign(
         { email: payload.email },
         {
           secret: process.env.JWT_SECRET,
-          expiresIn: '360s',
+          expiresIn: '3h',
         },
       ),
     };
