@@ -71,7 +71,8 @@ export class CategoryService {
         },
         data: {
           name: dto.name,
-          observation: dto.description,
+          observation: dto.observation,
+          description: dto.description,
         },
       });
 

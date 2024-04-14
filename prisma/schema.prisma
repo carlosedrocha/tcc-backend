@@ -70,3 +70,22 @@ model Category {
   @@map("categories")
 
 }
+
+model Item {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  price       Float?
+  type        ItemType?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@map("items")
+}
+
+//Enum
+enum ItemType {
+  drink
+  perishable
+}
