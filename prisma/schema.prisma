@@ -28,6 +28,8 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
+
+  @@map("users")
 }
 
 model Entity {
@@ -39,6 +41,8 @@ model Entity {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("entities")
 }
 
 model Token {
@@ -50,13 +54,19 @@ model Token {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("tokens")
 }
 
-// model Entity {
-//   id   String @id @default(uuid())
-//   name String
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  description String?
+  observation String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-//   createdAt DateTime  @default(now())
-//   updatedAt DateTime  @updatedAt
-//   deletedAt DateTime?
-// }
+  @@map("categories")
+
+}
