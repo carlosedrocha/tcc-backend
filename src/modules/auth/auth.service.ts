@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { hashPassword, verifyPassword } from 'src/helper/hash/password.hash';
@@ -17,6 +18,7 @@ export class AuthService {
     private prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private config: ConfigService,
   ) {}
   async localSignIn(dto: SignInDto): Promise<any> {
     try {
@@ -27,6 +29,7 @@ export class AuthService {
       if (await verifyPassword(dto.password, user.hashedPassword)) {
         return await this.generateToken(user);
       }
+      throw new UnauthorizedException('Usuário ou Senha Inválidos');
     } catch (error) {
       throw new UnauthorizedException('Usuário ou Senha Inválidos');
     }
@@ -38,8 +41,8 @@ export class AuthService {
       bearer_token: this.jwtService.sign(
         { email: payload.email },
         {
-          secret: process.env.JWT_SECRET,
-          expiresIn: '3h',
+          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
+          expiresIn: '6h',
         },
       ),
     };
