@@ -93,10 +93,23 @@ model Dish {
   items       Item[]
   description String?
   categories  Category[]
-  price      Float?
+  price       Float
+  menus        Menu[]      
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   deletedAt   DateTime?
+}
+
+model Menu {
+  id          String    @id @default(uuid())
+  name        String
+  dishes      Dish[]
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@map("menus")
 }
 
 //Enum

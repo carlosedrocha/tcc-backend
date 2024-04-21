@@ -8,6 +8,7 @@ import { DishModule } from './modules/dish/dish.module';
 import { ItemModule } from './modules/item/item.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
+import { MenuModule } from './modules/menu/menu.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './modules/user/user.module';
     CategoryModule,
     ItemModule,
     DishModule,
+    MenuModule,
   ],
   providers: [
     {
