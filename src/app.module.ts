@@ -9,6 +9,8 @@ import { ItemModule } from './modules/item/item.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
 import { MenuModule } from './modules/menu/menu.module';
+import { RoleModule } from './modules/role/role.module';
+import { PermissionModule } from './modules/permission/permission.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { MenuModule } from './modules/menu/menu.module';
     ItemModule,
     DishModule,
     MenuModule,
+    RoleModule,
+    PermissionModule,
   ],
   providers: [
     {
