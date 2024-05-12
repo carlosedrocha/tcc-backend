@@ -12,25 +12,53 @@ export class DishService {
 
   async createDish(dto: CreateDishDto) {
     try {
+      const checkCategories = await this.prisma.category.findMany({
+        where: {
+          id: {
+            in: dto.categoriesIds,
+          },
+        },
+      });
+
+      if (checkCategories.length !== dto.categoriesIds.length) {
+        throw new NotFoundException('Alguma categoria não encontrada');
+      }
+
+      const checkItems = await this.prisma.item.findMany({
+        where: {
+          id: {
+            in: dto.items.map((item) => item.id),
+          },
+        },
+      });
+
+      if (checkItems.length !== dto.items.length) {
+        throw new NotFoundException('Algum item não encontrado');
+      }
+
       const dish = await this.prisma.dish.create({
         data: {
           name: dto.name,
           description: dto.description,
           price: dto.price,
+          dishIngredients: {
+            create: dto.items.map((itemId) => ({
+              item: {
+                connect: {
+                  id: itemId.id,
+                },
+              },
+              quantity: itemId.quantity,
+            })),
+          },
           categories: {
             connect: dto.categoriesIds
               ? dto.categoriesIds.map((categoryId) => ({ id: categoryId }))
               : undefined,
           },
-          items: {
-            connect: dto.itemsIds
-              ? dto.itemsIds.map((itemId) => ({ id: itemId }))
-              : undefined,
-          },
         },
         include: {
           categories: true,
-          items: true,
         },
       });
 

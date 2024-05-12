@@ -1,11 +1,4 @@
-import { ItemType } from '@prisma/client';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateItemDto {
   @IsNotEmpty()
@@ -17,10 +10,18 @@ export class CreateItemDto {
   description?: string;
 
   @IsOptional()
-  @IsNumber()
-  price?: number;
+  @IsString()
+  measurementUnit?: string;
 
   @IsOptional()
-  @IsEnum(ItemType)
-  type?: ItemType;
+  @IsNumber()
+  measurementUnitValue?: number;
+
+  @IsOptional()
+  @IsNumber()
+  cost?: number;
+
+  @IsOptional()
+  @IsString()
+  typeId?: string;
 }

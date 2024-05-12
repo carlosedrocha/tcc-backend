@@ -25,8 +25,8 @@ model User {
   refreshToken   String?
   tokens         Token[]
   entity         Entity?
-  role           Role      @relation(fields: [roleId], references: [id])
-  roleId         Int
+  role           Role?     @relation(fields: [roleId], references: [id])
+  roleId         Int?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
@@ -75,31 +75,58 @@ model Category {
 }
 
 model Item {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  price       Float?
-  type        ItemType?
-  dish        Dish?     @relation(fields: [dishId], references: [id])
-  dishId      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+  id                   String           @id @default(uuid())
+  name                 String
+  description          String?
+  cost                 Float?
+  type                 ItemType         @relation(fields: [itemTypeId], references: [id])
+  itemTypeId           String
+  measurementUnit      String?
+  measurementUnitValue Float?
+  dishIngredients      DishIngredient[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  deletedAt            DateTime?
 
   @@map("items")
 }
 
+model ItemType {
+  id        String    @id @default(uuid())
+  name      String
+  items     Item[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("item_types")
+}
+
+model DishIngredient {
+  id        String    @id @default(uuid())
+  dish      Dish      @relation(fields: [dishId], references: [id])
+  dishId    String
+  item      Item      @relation(fields: [itemId], references: [id])
+  itemId    String
+  quantity  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("dish_ingredients")
+}
+
 model Dish {
-  id          String     @id @default(uuid())
-  name        String
-  items       Item[]
-  description String?
-  categories  Category[]
-  price       Float
-  menus       Menu[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
+  id              String           @id @default(uuid())
+  name            String
+  description     String?
+  categories      Category[]
+  price           Float
+  dishIngredients DishIngredient[]
+  menus           Menu[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
 }
 
 model Menu {
@@ -118,7 +145,7 @@ model Role {
   id          Int          @id @default(autoincrement())
   name        String
   permissions Permission[]
-  user        User[]
+  users       User[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
@@ -139,7 +166,3 @@ model Permission {
 }
 
 //Enum
-enum ItemType {
-  drink
-  perishable
-}

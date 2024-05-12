@@ -11,6 +11,7 @@ import { UserModule } from './modules/user/user.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { ItemTypeModule } from './modules/item-type/item-type.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PermissionModule } from './modules/permission/permission.module';
     MenuModule,
     RoleModule,
     PermissionModule,
+    ItemTypeModule,
   ],
   providers: [
     {

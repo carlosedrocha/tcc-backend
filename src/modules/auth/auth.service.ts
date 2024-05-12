@@ -64,6 +64,7 @@ export class AuthService {
         data: {
           email: dto.email,
           hashedPassword: hashedPassword,
+
           entity: {
             create: {
               firstName: dto.firstName,

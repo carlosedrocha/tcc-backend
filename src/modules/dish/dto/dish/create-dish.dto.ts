@@ -6,6 +6,16 @@ import {
   IsString,
 } from 'class-validator';
 
+class Item {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  quantity: number;
+}
+
 export class CreateDishDto {
   @IsNotEmpty()
   @IsString()
@@ -19,11 +29,12 @@ export class CreateDishDto {
   @IsString()
   description?: string;
 
+  //TODO validate this (if should or not be optional)!!
   @IsOptional()
   @IsArray()
   categoriesIds?: string[];
 
   @IsOptional()
   @IsArray()
-  itemsIds?: string[];
+  items?: Item[];
 }
