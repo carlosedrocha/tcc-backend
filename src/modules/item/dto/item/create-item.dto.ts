@@ -9,17 +9,17 @@ export class CreateItemDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  measurementUnit?: string;
+  measurementUnit: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  measurementUnitValue?: number;
+  measurementUnitValue: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  cost?: number;
+  cost: number;
 
   @IsOptional()
   @IsString()

@@ -12,6 +12,8 @@ import { MenuModule } from './modules/menu/menu.module';
 import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { ItemTypeModule } from './modules/item-type/item-type.module';
+import { OrderModule } from './modules/order/order.module';
+import { TabModule } from './modules/tab/tab.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { ItemTypeModule } from './modules/item-type/item-type.module';
     RoleModule,
     PermissionModule,
     ItemTypeModule,
+    OrderModule,
+    TabModule,
   ],
   providers: [
     {

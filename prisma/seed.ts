@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 async function main() {
+  //todo add all permissions
   const permissionsList = [
     {
       name: 'employee:register',
@@ -72,6 +73,7 @@ async function main() {
     where: { id: 0 },
     update: { id: 0 },
     create: {
+      id: 0,
       name: 'Admin',
       permissions: {
         createMany: {
@@ -86,6 +88,7 @@ async function main() {
     where: { email: 'admin@admin.com' },
     update: {},
     create: {
+      id: 'c0923c25-99cc-4bd7-be1a-c51c8a30749d',
       email: 'admin@admin.com',
       hashedPassword:
         '$2b$10$K19JB1KW7OL2MNziH4Sn7u0P/ANseoWqYMNS1gHv10CnUQwcJXc/O',
@@ -97,8 +100,76 @@ async function main() {
       entity: {
         create: {
           firstName: 'Admin',
-          lastName: 'Admin',
+          lastName: 'BM',
         },
+      },
+    },
+  });
+
+  const createItemType = await prisma.itemType.upsert({
+    where: { id: '57a2471a-9371-4f63-adc0-cf01516e3a5b0' },
+    update: { id: '57a2471a-9371-4f63-adc0-cf01516e3a5b' },
+    create: {
+      id: '57a2471a-9371-4f63-adc0-cf01516e3a5b',
+      name: 'Massa',
+    },
+  });
+
+  const createItem = await prisma.item.upsert({
+    where: { id: '14fcefa2-8d20-4100-9ee5-fe50605437a9' },
+    update: { id: '14fcefa2-8d20-4100-9ee5-fe50605437a9' },
+    create: {
+      id: '14fcefa2-8d20-4100-9ee5-fe50605437a9',
+      name: 'Massa fermentada',
+      description: 'Massa branca fermentada por 48horas',
+      cost: 15,
+      measurementUnit: 'Kg',
+      measurementUnitValue: 0.5,
+      type: {
+        connect: {
+          id: createItemType.id,
+        },
+      },
+    },
+  });
+
+  const createCategory = await prisma.category.upsert({
+    where: { id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9' },
+    update: { id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9' },
+    create: {
+      id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9',
+      name: 'Macarrão',
+      description: 'Macarrão',
+      observation: 'Macarrão',
+    },
+  });
+
+  const createDish = await prisma.dish.upsert({
+    where: { id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9' },
+    update: { id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9' },
+    create: {
+      id: 'f7ec6ca5-a3ec-4e92-aa44-94b91e9606a9',
+      name: 'Macarrão',
+      description: 'Macarrão',
+      price: 15,
+      dishIngredients: {
+        create: [
+          {
+            item: {
+              connect: {
+                id: createItem.id,
+              },
+            },
+            quantity: 1,
+          },
+        ],
+      },
+      categories: {
+        connect: [
+          {
+            id: createCategory.id,
+          },
+        ],
       },
     },
   });

@@ -27,6 +27,7 @@ model User {
   entity         Entity?
   role           Role?     @relation(fields: [roleId], references: [id])
   roleId         Int?
+  tabs           Tab[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
@@ -65,8 +66,7 @@ model Category {
   name        String
   description String?
   observation String?
-  dish        Dish?     @relation(fields: [dishId], references: [id])
-  dishId      String?
+  dishs       Dish[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -84,6 +84,7 @@ model Item {
   measurementUnit      String?
   measurementUnitValue Float?
   dishIngredients      DishIngredient[]
+  orders               Order[]
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   deletedAt            DateTime?
@@ -124,6 +125,7 @@ model Dish {
   price           Float
   dishIngredients DishIngredient[]
   menus           Menu[]
+  orders          Order[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
@@ -165,4 +167,44 @@ model Permission {
   @@map("permissions")
 }
 
-//Enum
+model Tab {
+  id        String    @id @default(uuid())
+  tabNumber Int?
+  //Todo: check = it could be a table number instead of a user
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  orders    Order[]
+  total     Float?
+  status    TabStatus @default(OPEN)
+  closedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("tabs")
+}
+
+model Order {
+  id        String    @id @default(uuid())
+  tab       Tab       @relation(fields: [tabId], references: [id])
+  tabId     String
+  dishs     Dish[]
+  items     Item[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("orders")
+}
+
+//Enums
+enum TabStatus {
+  OPEN
+  CLOSED
+}
+
+enum TabOwner {
+  CUSTOMER
+  WAITER
+}
+
