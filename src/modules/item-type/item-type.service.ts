@@ -3,58 +3,56 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { CreateItemTypeDto, UpdateItemTypeDto } from '../item-type/dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
 @Injectable()
-export class CategoryService {
+export class ItemTypeService {
   constructor(private prisma: PrismaService) {}
 
-  async createCategory(dto: CreateCategoryDto) {
+  async createItemType(dto: CreateItemTypeDto) {
     try {
-      const category = await this.prisma.category.create({
+      const itemtype = await this.prisma.itemType.create({
         data: {
           name: dto.name,
-          description: dto.description,
-          observation: dto.description,
         },
       });
 
-      return category;
+      return itemtype;
     } catch (error) {
       console.log(error);
 
-      throw new BadRequestException('Erro ao criar categoria');
+      throw new BadRequestException('Erro ao criar item-type');
     }
   }
 
-  async getCategories() {
+  async getItemTypes() {
     try {
-      const categories = await this.prisma.category.findMany({
+      const itemtypes = await this.prisma.itemType.findMany({
         where: {
           deletedAt: null,
         },
       });
-      return categories;
+      return itemtypes;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar categorias');
     }
   }
 
-  async getCategoryById(id: string) {
+  async getItemTypeById(id: string) {
     try {
-      const category = await this.prisma.category.findUnique({
+      const itemtype = await this.prisma.itemType.findUnique({
         where: {
           id: id,
           deletedAt: null,
         },
       });
 
-      if (!category) {
+      if (!itemtype) {
         throw new NotFoundException('Categoria não encontrada');
       }
 
-      return category;
+      return itemtype;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -64,28 +62,26 @@ export class CategoryService {
     }
   }
 
-  async updateCategory(id: string, dto: UpdateCategoryDto) {
+  async updateItemType(id: string, dto: UpdateItemTypeDto) {
     try {
-      const category = await this.prisma.category.update({
+      const itemtype = await this.prisma.itemType.update({
         where: {
           id: id,
         },
         data: {
           name: dto.name,
-          observation: dto.observation,
-          description: dto.description,
         },
       });
 
-      return category;
+      return itemtype;
     } catch (error) {
       throw new BadRequestException('Erro ao atualizar categoria');
     }
   }
 
-  async deleteCategory(id: string) {
+  async deleteItemType(id: string) {
     try {
-      const deletedCategory = await this.prisma.category.update({
+      const deletedItemType = await this.prisma.itemType.update({
         where: {
           id: id,
         },
@@ -94,7 +90,7 @@ export class CategoryService {
         },
       });
 
-      return deletedCategory;
+      return deletedItemType;
     } catch (error) {
       throw new BadRequestException('Erro ao deletar categoria');
     }

@@ -12,16 +12,37 @@ export class ItemService {
 
   async createItem(dto: CreateItemDto) {
     try {
+      const checkType = await this.prisma.itemType.findUnique({
+        where: {
+          id: dto.typeId,
+        },
+      });
+
+      if (!checkType) {
+        throw new NotFoundException('Tipo não encontrado');
+      }
+
       const item = await this.prisma.item.create({
         data: {
           name: dto.name,
           description: dto.description,
+          cost: dto.cost,
+          type: {
+            connect: {
+              id: dto.typeId,
+            },
+          },
+          measurementUnit: dto.measurementUnit,
+          measurementUnitValue: dto.measurementUnitValue,
         },
       });
 
       return item;
     } catch (error) {
       console.log(error);
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
 
       throw new BadRequestException('Erro ao criar item');
     }
@@ -72,6 +93,14 @@ export class ItemService {
         data: {
           name: dto.name,
           description: dto.description,
+          cost: dto.cost,
+          measurementUnit: dto.measurementUnit,
+          measurementUnitValue: dto.measurementUnitValue,
+          type: {
+            connect: {
+              id: dto.typeId,
+            },
+          },
         },
       });
 
