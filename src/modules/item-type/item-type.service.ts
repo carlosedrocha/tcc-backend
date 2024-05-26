@@ -48,11 +48,7 @@ export class ItemTypeService {
         },
       });
 
-      if (!itemtype) {
-        throw new NotFoundException('Categoria não encontrada');
-      }
-
-      return itemtype;
+      return !itemtype?"":itemtype;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);

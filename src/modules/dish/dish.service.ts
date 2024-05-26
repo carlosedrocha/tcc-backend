@@ -11,6 +11,7 @@ export class DishService {
   constructor(private prisma: PrismaService) {}
 
   async createDish(dto: CreateDishDto) {
+    console.log(dto)
     try {
       const checkCategories = await this.prisma.category.findMany({
         where: {
@@ -75,6 +76,10 @@ export class DishService {
       const dishes = await this.prisma.dish.findMany({
         where: {
           deletedAt: null,
+        },
+        include: {
+          dishIngredients:true,
+          categories: true,
         },
       });
       return dishes;
