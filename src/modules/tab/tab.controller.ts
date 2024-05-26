@@ -27,6 +27,12 @@ export class TabController {
     return await this.tabService.getTabById(id);
   }
 
+  @Get('open')
+  @HttpCode(HttpStatus.OK)
+  async getOpenTabs() {
+    return await this.tabService.getOpenTabs();
+  }
+
   @Put('close/:id')
   @HttpCode(HttpStatus.OK)
   async closeTab(@Param('id') id: string) {
