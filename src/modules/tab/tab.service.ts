@@ -71,6 +71,29 @@ export class TabService {
     }
   }
 
+  async getOpenTabs() {
+    try {
+      const tabs = await this.prisma.tab.findMany({
+        where: {
+          status: 'OPEN',
+          deletedAt: null,
+        },
+        include: {
+          user: true,
+          orders: {
+            include: {
+              items: true,
+              dishs: true,
+            },
+          },
+        },
+      });
+      return tabs;
+    } catch (error) {
+      throw new BadRequestException('Erro ao buscar comandas');
+    }
+  }
+
   async closeTab(id: string) {
     try {
       const closedTab = await this.prisma.tab.update({
