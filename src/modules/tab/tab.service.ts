@@ -78,6 +78,15 @@ export class TabService {
           status: 'OPEN',
           deletedAt: null,
         },
+        include: {
+          user: true,
+          orders: {
+            include: {
+              items: true,
+              dishs: true,
+            },
+          },
+        },
       });
       return tabs;
     } catch (error) {
