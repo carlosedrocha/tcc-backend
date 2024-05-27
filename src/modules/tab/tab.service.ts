@@ -54,12 +54,12 @@ export class TabService {
     try {
       const tab = await this.prisma.tab.findUnique({
         where: {
-          id,
+          id: id,
         },
       });
 
       if (!tab) {
-        throw new NotFoundException('Comanda não encontrada');
+        throw new NotFoundException(' get idComanda não encontrada');
       }
 
       return tab;
@@ -73,6 +73,7 @@ export class TabService {
 
   async getOpenTabs() {
     try {
+      console.log('aq');
       const tabs = await this.prisma.tab.findMany({
         where: {
           status: 'OPEN',
@@ -88,6 +89,7 @@ export class TabService {
           },
         },
       });
+      console.log(tabs);
       return tabs;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar comandas');

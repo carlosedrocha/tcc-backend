@@ -21,19 +21,21 @@ export class TabController {
     return await this.tabService.getTabs();
   }
 
-  @Get(':id')
+  @Get('by/:id')
   @HttpCode(HttpStatus.OK)
   async getTabById(@Param('id') id: string) {
+    console.log('aqui');
     return await this.tabService.getTabById(id);
   }
 
-  @Get('open')
+  @Get('/open')
   @HttpCode(HttpStatus.OK)
   async getOpenTabs() {
+    console.log('aq');
     return await this.tabService.getOpenTabs();
   }
 
-  @Put('close/:id')
+  @Put('/close/:id')
   @HttpCode(HttpStatus.OK)
   async closeTab(@Param('id') id: string) {
     return await this.tabService.closeTab(id);
