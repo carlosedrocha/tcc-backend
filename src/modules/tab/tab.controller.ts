@@ -31,8 +31,13 @@ export class TabController {
   @Get('/open')
   @HttpCode(HttpStatus.OK)
   async getOpenTabs() {
-    console.log('aq');
     return await this.tabService.getOpenTabs();
+  }
+
+  @Get('/lastNumber')
+  @HttpCode(HttpStatus.OK)
+  async lastTabNumber(){
+    return await this.tabService.getLasTabNumberTab()
   }
 
   @Put('/close/:id')

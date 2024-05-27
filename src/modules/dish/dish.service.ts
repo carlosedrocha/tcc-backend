@@ -36,6 +36,7 @@ export class DishService {
       if (checkItems.length !== dto.items.length) {
         throw new NotFoundException('Algum item não encontrado');
       }
+      
 
       const dish = await this.prisma.dish.create({
         data: {
@@ -71,6 +72,7 @@ export class DishService {
     }
   }
 
+
   async getDishes() {
     try {
       const dishes = await this.prisma.dish.findMany({
@@ -78,7 +80,17 @@ export class DishService {
           deletedAt: null,
         },
         include: {
-          dishIngredients:true,
+          dishIngredients: {
+            select: {
+              id: true,
+              quantity: true,
+              item: {
+                select: {
+                  name: true, // Inclui apenas o nome do item
+                },
+              },
+            },
+          },
           categories: true,
         },
       });
@@ -137,7 +149,7 @@ export class DishService {
           }),
         },
       });
-
+        console.log(dish)
       return dish;
     } catch (error) {
       throw new BadRequestException('Erro ao atualizar prato');

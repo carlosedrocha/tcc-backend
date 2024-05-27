@@ -17,7 +17,7 @@ export class TabService {
           id: dto.userId,
         },
       });
-
+      console.log(dto.userId)
       if (!checkUser) {
         throw new NotFoundException('Usuário não encontrado');
       }
@@ -94,6 +94,23 @@ export class TabService {
     } catch (error) {
       throw new BadRequestException('Erro ao buscar comandas');
     }
+  }
+  async getLasTabNumberTab(){
+    try{
+      const tabNumber = await this.prisma.tab.findFirst({
+        orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          tabNumber: true,
+        },
+      })
+      console.log(tabNumber)
+      return tabNumber;
+    }catch(error){
+      throw new BadRequestException('Erro ao procurar numero da comanda');
+    }
+
   }
 
   async closeTab(id: string) {
