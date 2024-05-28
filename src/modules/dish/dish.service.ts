@@ -11,7 +11,7 @@ export class DishService {
   constructor(private prisma: PrismaService) {}
 
   async createDish(dto: CreateDishDto) {
-    console.log(dto)
+    console.log(dto);
     try {
       const checkCategories = await this.prisma.category.findMany({
         where: {
@@ -36,7 +36,6 @@ export class DishService {
       if (checkItems.length !== dto.items.length) {
         throw new NotFoundException('Algum item não encontrado');
       }
-      
 
       const dish = await this.prisma.dish.create({
         data: {
@@ -71,7 +70,6 @@ export class DishService {
       throw new BadRequestException('Erro ao criar prato');
     }
   }
-
 
   async getDishes() {
     try {
@@ -149,7 +147,7 @@ export class DishService {
           }),
         },
       });
-        console.log(dish)
+      console.log(dish);
       return dish;
     } catch (error) {
       throw new BadRequestException('Erro ao atualizar prato');
