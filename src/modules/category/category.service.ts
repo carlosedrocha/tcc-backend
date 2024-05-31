@@ -85,6 +85,7 @@ export class CategoryService {
 
   async deleteCategory(id: string) {
     try {
+      console.log(id)
       const deletedCategory = await this.prisma.category.update({
         where: {
           id: id,
@@ -96,6 +97,7 @@ export class CategoryService {
 
       return deletedCategory;
     } catch (error) {
+      console.log(error)
       throw new BadRequestException('Erro ao deletar categoria');
     }
   }

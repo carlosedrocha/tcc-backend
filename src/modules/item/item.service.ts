@@ -54,7 +54,15 @@ export class ItemService {
         where: {
           deletedAt: null,
         },
-      });
+        include:{
+          type:{
+            select: {
+              id: true,
+              name:true
+          },
+        }
+      }
+    });
       return items;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar itens');
@@ -68,6 +76,14 @@ export class ItemService {
           id: id,
           deletedAt: null,
         },
+        include:{
+          type:{
+            select: {
+              id: true,
+              name:true
+          },
+        }
+      } 
       });
 
       if (!item) {
