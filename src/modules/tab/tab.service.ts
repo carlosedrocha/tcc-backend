@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Entity } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTabDto } from './dto';
 
@@ -22,6 +23,21 @@ export class TabService {
         throw new NotFoundException('Usuário não encontrado');
       }
 
+      let createdEntity: Entity | null;
+      if (dto.entity) {
+        createdEntity = await this.prisma.entity.create({
+          data: {
+            firstName: dto.entity.firstName,
+            lastName: dto.entity.lastName,
+            cpf: dto.entity.cpf,
+          },
+        });
+
+        if (!createdEntity) {
+          throw new BadRequestException('Erro ao criar entidade');
+        }
+      }
+
       const tab = await this.prisma.tab.create({
         data: {
           tabNumber: dto.tabNumber,
@@ -29,7 +45,7 @@ export class TabService {
         },
       });
 
-      return tab;
+      return { tab: tab, ...(createdEntity && { entity: createdEntity }) };
     } catch (error) {
       console.log(error);
 
@@ -37,6 +53,9 @@ export class TabService {
         throw new NotFoundException(error.message);
       }
 
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
       throw new BadRequestException('Não foi possível criar a comanda');
     }
   }
@@ -104,6 +123,7 @@ export class TabService {
       throw new BadRequestException('Erro ao buscar comandas');
     }
   }
+
   async getLasTabNumberTab() {
     try {
       const tabNumber = await this.prisma.tab.findFirst({

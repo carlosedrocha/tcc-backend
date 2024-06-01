@@ -24,7 +24,6 @@ export class TabController {
   @Get('by/:id')
   @HttpCode(HttpStatus.OK)
   async getTabById(@Param('id') id: string) {
-
     return await this.tabService.getTabById(id);
   }
 
@@ -36,8 +35,8 @@ export class TabController {
 
   @Get('/lastNumber')
   @HttpCode(HttpStatus.OK)
-  async lastTabNumber(){
-    return await this.tabService.getLasTabNumberTab()
+  async lastTabNumber() {
+    return await this.tabService.getLasTabNumberTab();
   }
 
   @Put('/close/:id')
