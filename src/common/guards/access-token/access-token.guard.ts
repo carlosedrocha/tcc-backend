@@ -30,8 +30,10 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
     // Custom handling of authentication errors
     if (err || !user) {
       console.error('aa', err);
+
       throw err || new UnauthorizedException();
     }
+    console.log(user);
     return user; // Return the validated user
   }
 }

@@ -17,7 +17,7 @@ export class TabService {
           id: dto.userId,
         },
       });
-      console.log(dto.userId)
+      console.log(dto.userId);
       if (!checkUser) {
         throw new NotFoundException('Usuário não encontrado');
       }
@@ -73,14 +73,23 @@ export class TabService {
 
   async getOpenTabs() {
     try {
-      console.log('aq');
       const tabs = await this.prisma.tab.findMany({
         where: {
           status: 'OPEN',
           deletedAt: null,
         },
         include: {
-          user: true,
+          user: {
+            include: {
+              entity: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  cpf: true,
+                },
+              },
+            },
+          },
           orders: {
             include: {
               items: true,
@@ -89,14 +98,14 @@ export class TabService {
           },
         },
       });
-      console.log(tabs);
+
       return tabs;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar comandas');
     }
   }
-  async getLasTabNumberTab(){
-    try{
+  async getLasTabNumberTab() {
+    try {
       const tabNumber = await this.prisma.tab.findFirst({
         orderBy: {
           createdAt: 'desc',
@@ -104,13 +113,12 @@ export class TabService {
         select: {
           tabNumber: true,
         },
-      })
-      console.log(tabNumber)
+      });
+      console.log(tabNumber);
       return tabNumber;
-    }catch(error){
+    } catch (error) {
       throw new BadRequestException('Erro ao procurar numero da comanda');
     }
-
   }
 
   async closeTab(id: string) {

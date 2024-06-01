@@ -42,6 +42,7 @@ export class DishService {
           name: dto.name,
           description: dto.description,
           price: dto.price,
+          photoUrl: dto.photoUrl,
           dishIngredients: {
             create: dto.items.map((itemId) => ({
               item: {
@@ -131,6 +132,7 @@ export class DishService {
           name: dto.name,
           description: dto.description,
           price: dto.price,
+          photoUrl: dto.photoUrl,
           ...(dto.categoriesIds && {
             categories: {
               connect: dto.categoriesIds

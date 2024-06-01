@@ -14,6 +14,10 @@ export class UpdateDishDto {
   description?: string;
 
   @IsOptional()
+  @IsString()
+  photoUrl?: string;
+
+  @IsOptional()
   @IsArray()
   categoriesIds?: string[];
 

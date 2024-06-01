@@ -29,6 +29,10 @@ export class CreateDishDto {
   @IsString()
   description?: string;
 
+  @IsOptional()
+  @IsString()
+  photoUrl?: string;
+
   //TODO validate this (if should or not be optional)!!
   @IsOptional()
   @IsArray()

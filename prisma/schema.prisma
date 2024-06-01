@@ -41,6 +41,7 @@ model Entity {
   userId    String    @unique
   firstName String?
   lastName  String?
+  cpf       String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -121,8 +122,9 @@ model Dish {
   id              String           @id @default(uuid())
   name            String
   description     String?
-  categories      Category[]
   price           Float
+  photoUrl        String?
+  categories      Category[]
   dishIngredients DishIngredient[]
   menus           Menu[]
   orders          Order[]
