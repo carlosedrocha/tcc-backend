@@ -42,6 +42,7 @@ export class TabService {
         data: {
           tabNumber: dto.tabNumber,
           userId: dto.userId,
+          entityId: createdEntity.id,
         },
       });
 
@@ -91,6 +92,7 @@ export class TabService {
   }
 
   async getOpenTabs() {
+    //Todo build a payload obj return to not send hashedpassword attribute in user
     try {
       const tabs = await this.prisma.tab.findMany({
         where: {
