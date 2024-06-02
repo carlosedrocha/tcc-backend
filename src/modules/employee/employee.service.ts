@@ -39,10 +39,28 @@ export class EmployeeService {
 
   async getEmployeeById(id: string) {
     try {
-      const employee = await this.prisma.user.findUnique({
+      // const employee = await this.prisma.user.findUnique({
+      //   where: {
+      //     id: id,
+      //     deletedAt: null,
+      //   },
+      // });
+
+      const employee = await this.prisma.entity.findUnique({
         where: {
           id: id,
           deletedAt: null,
+          user: {
+            roleId: { notIn: [0] },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              email: true,
+              role: { select: { name: true } },
+            },
+          },
         },
       });
       if (!employee) {
@@ -50,6 +68,7 @@ export class EmployeeService {
       }
       return employee;
     } catch (error) {
+      console.log(error);
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }

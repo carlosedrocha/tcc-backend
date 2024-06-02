@@ -53,30 +53,34 @@ export class OrderService {
 
   async createOrder(dto: CreateOrderDto) {
     try {
-      const checkDishes = await this.prisma.dish.findMany({
-        where: {
-          deletedAt: null,
-          id: {
-            in: dto.dishes.map((dish) => dish.id),
+      if (dto.dishes) {
+        const checkDishes = await this.prisma.dish.findMany({
+          where: {
+            deletedAt: null,
+            id: {
+              in: dto.dishes.map((dish) => dish.id),
+            },
           },
-        },
-      });
+        });
 
-      if (checkDishes.length !== dto.dishes.length) {
-        throw new NotFoundException('Algum prato não encontrado');
+        if (checkDishes.length !== dto.dishes.length) {
+          throw new NotFoundException('Algum prato não encontrado');
+        }
       }
 
-      const checkItems = await this.prisma.item.findMany({
-        where: {
-          deletedAt: null,
-          id: {
-            in: dto.items.map((item) => item.id),
+      if (dto.items) {
+        const checkItems = await this.prisma.item.findMany({
+          where: {
+            deletedAt: null,
+            id: {
+              in: dto.items.map((item) => item.id),
+            },
           },
-        },
-      });
+        });
 
-      if (checkItems.length !== dto.items.length) {
-        throw new NotFoundException('Algum item não encontrado');
+        if (checkItems.length !== dto.items.length) {
+          throw new NotFoundException('Algum item não encontrado');
+        }
       }
 
       const checkTab = await this.prisma.tab.findUnique({
@@ -120,16 +124,20 @@ export class OrderService {
               id: dto.tabId,
             },
           },
-          items: {
-            connect: itemConnectIds.map((id) => ({
-              id,
-            })),
-          },
-          dishs: {
-            connect: dto.dishes.map((dish) => ({
-              id: dish.id,
-            })),
-          },
+          ...(dto.items && {
+            items: {
+              connect: itemConnectIds.map((id) => ({
+                id,
+              })),
+            },
+          }),
+          ...(dto.dishes && {
+            dishs: {
+              connect: dto.dishes.map((dish) => ({
+                id: dish.id,
+              })),
+            },
+          }),
         },
       });
 
