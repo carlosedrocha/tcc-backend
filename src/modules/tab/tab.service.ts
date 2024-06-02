@@ -62,8 +62,32 @@ export class TabService {
   }
 
   async getTabs() {
+    //Todo build a payload obj return to not send hashedpassword attribute in user
     try {
-      const tabs = await this.prisma.tab.findMany();
+      const tabs = await this.prisma.tab.findMany({
+        where: {
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          entity: {
+            select: {
+              firstName: true,
+              lastName: true,
+              cpf: true,
+            },
+          },
+          orders: {
+            include: {
+              items: true,
+              dishs: true,
+            },
+          },
+        },
+      });
+
       return tabs;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar comandas');
@@ -88,41 +112,6 @@ export class TabService {
         throw new NotFoundException(error.message);
       }
       throw new BadRequestException('Erro ao buscar comanda');
-    }
-  }
-
-  async getOpenTabs() {
-    //Todo build a payload obj return to not send hashedpassword attribute in user
-    try {
-      const tabs = await this.prisma.tab.findMany({
-        where: {
-          status: 'OPEN',
-          deletedAt: null,
-        },
-        include: {
-          user: {
-            include: {
-              entity: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                  cpf: true,
-                },
-              },
-            },
-          },
-          orders: {
-            include: {
-              items: true,
-              dishs: true,
-            },
-          },
-        },
-      });
-
-      return tabs;
-    } catch (error) {
-      throw new BadRequestException('Erro ao buscar comandas');
     }
   }
 
