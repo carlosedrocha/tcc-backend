@@ -58,7 +58,7 @@ export class EmployeeService {
           user: {
             select: {
               email: true,
-              role: { select: { name: true } },
+              role: { select: { name: true, id: true } },
             },
           },
         },
