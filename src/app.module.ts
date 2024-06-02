@@ -15,6 +15,7 @@ import { ItemTypeModule } from './modules/item-type/item-type.module';
 import { OrderModule } from './modules/order/order.module';
 import { TabModule } from './modules/tab/tab.module';
 import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { EmployeeModule } from './modules/employee/employee.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
     OrderModule,
     TabModule,
     FileUploadModule,
+    EmployeeModule,
   ],
   providers: [
     {
