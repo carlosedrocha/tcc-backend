@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   //todo add all permissions
-  const permissionsList = [
+  const adminPermissionsList = [
     {
       name: 'employee:register',
     },
@@ -67,6 +67,48 @@ async function main() {
     {
       name: 'role:delete',
     },
+    {
+      name: 'tab:register',
+    },
+    {
+      name: 'tab:read',
+    },
+    {
+      name: 'tab:delete',
+    },
+    {
+      name: 'order:register',
+    },
+    {
+      name: 'order:read',
+    },
+    {
+      name: 'order:delete',
+    },
+  ];
+
+  const waiterPermissionsList = [
+    {
+      name: 'menu:read',
+    },
+    {
+      name: 'tab:register',
+    },
+    {
+      name: 'tab:read',
+    },
+    {
+      name: 'tab:delete',
+    },
+    {
+      name: 'order:register',
+    },
+    {
+      name: 'order:read',
+    },
+    {
+      name: 'order:delete',
+    },
   ];
 
   const adminRole = await prisma.role.upsert({
@@ -77,9 +119,30 @@ async function main() {
       name: 'Admin',
       permissions: {
         createMany: {
-          data: permissionsList,
+          data: adminPermissionsList,
           skipDuplicates: true,
         },
+      },
+    },
+  });
+
+  const getWaiterPermissions = await prisma.permission.findMany({
+    where: {
+      OR: waiterPermissionsList.map((permission) => ({
+        name: permission.name,
+      })),
+    },
+  });
+  const waiterRole = await prisma.role.upsert({
+    where: { id: 1 },
+    update: { id: 1 },
+    create: {
+      id: 1,
+      name: 'Waiter',
+      permissions: {
+        connect: getWaiterPermissions.map((permission) => ({
+          id: permission.id,
+        })),
       },
     },
   });
