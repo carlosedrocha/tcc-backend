@@ -26,6 +26,9 @@ export class EmployeeService {
           role: {
             name: 'asc',
           },
+          entity: {
+            firstName: 'asc',
+          },
         },
       });
       return employee;

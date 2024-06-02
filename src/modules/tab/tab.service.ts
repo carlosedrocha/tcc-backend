@@ -100,6 +100,21 @@ export class TabService {
         where: {
           id: id,
         },
+        include: {
+          entity: {
+            select: {
+              firstName: true,
+              lastName: true,
+              cpf: true,
+            },
+          },
+          orders: {
+            include: {
+              items: true,
+              dishs: true,
+            },
+          },
+        },
       });
 
       if (!tab) {
