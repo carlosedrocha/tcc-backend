@@ -10,11 +10,11 @@ export class RoleService {
       return await this.prisma.role.findMany({
         where: {
           deletedAt: null,
+          name: { not: 'Admin' },
         },
       });
     } catch (e) {
       console.log(e);
-
       throw new BadRequestException('Erro ao buscar os cargos');
     }
   }

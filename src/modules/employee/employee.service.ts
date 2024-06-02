@@ -13,26 +13,26 @@ export class EmployeeService {
 
   async getEmployee() {
     try {
-      const employee = await this.prisma.user.findMany({
+      const employee = await this.prisma.entity.findMany({
         where: {
           deletedAt: null,
-          role: {
-            NOT: {
-              name: 'admin',
+          user: {
+            roleId: { notIn: [0] },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              email: true,
+              role: { select: { name: true } },
             },
           },
         },
-        orderBy: {
-          role: {
-            name: 'asc',
-          },
-          entity: {
-            firstName: 'asc',
-          },
-        },
       });
+
       return employee;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException(' Erro ao buscar os funcionários');
     }
   }
