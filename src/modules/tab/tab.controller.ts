@@ -27,11 +27,12 @@ export class TabController {
     return await this.tabService.getTabById(id);
   }
 
-  @Get('/open')
-  @HttpCode(HttpStatus.OK)
+  // @Get('/open')
+  // @HttpCode(HttpStatus.OK)
   // async getOpenTabs() {
   //   return await this.tabService.getOpenTabs();
   // }
+
   @Get('/lastNumber')
   @HttpCode(HttpStatus.OK)
   async lastTabNumber() {
