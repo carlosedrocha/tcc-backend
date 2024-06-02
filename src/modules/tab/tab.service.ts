@@ -63,7 +63,34 @@ export class TabService {
 
   async getTabs() {
     try {
-      const tabs = await this.prisma.tab.findMany();
+      const tabs = await this.prisma.tab.findMany({
+        where: {
+          deletedAt: null,
+        },
+        orderBy:{
+          createdAt: "desc"
+        },
+        include: {
+          user: {
+            include: {
+              entity: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  cpf: true,
+                },
+              },
+            },
+          },
+          orders: {
+            include: {
+              items: true,
+              dishs: true,
+            },
+          },
+        },
+      });
+
       return tabs;
     } catch (error) {
       throw new BadRequestException('Erro ao buscar comandas');
