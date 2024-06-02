@@ -24,7 +24,7 @@ export class EmployeeController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getEmployeeById(id: string) {
+  async getEmployeeById(@Param('id') id: string) {
     return this.employeeService.getEmployeeById(id);
   }
 
