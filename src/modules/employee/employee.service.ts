@@ -121,9 +121,13 @@ export class EmployeeService {
 
   async updateEmployee(id: string, dto: UpdateEmployeeDto) {
     try {
-      const checkEmployee = await this.prisma.user.findUnique({
+      const checkEmployee = await this.prisma.entity.findUnique({
         where: {
           id: id,
+          deletedAt: null,
+          user: {
+            roleId: { notIn: [0] },
+          },
         },
       });
 
@@ -141,26 +145,33 @@ export class EmployeeService {
         throw new NotFoundException('Cargo não encontrado');
       }
 
-      const employee = await this.prisma.user.update({
+      let hashedPassword: string;
+      if (dto.password) {
+        hashedPassword = await hashPassword(dto.password);
+      }
+
+      const employee = await this.prisma.entity.update({
         where: {
           id: id,
         },
         data: {
-          email: dto.email,
-          entity: {
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          cpf: dto.cpf,
+          user: {
             update: {
-              firstName: dto.firstName,
-              lastName: dto.lastName,
-              cpf: dto.cpf,
-            },
-          },
-          role: {
-            connect: {
-              id: dto.roleId,
+              email: dto.email,
+              ...(dto.password && { hashedPassword: hashedPassword }),
+              role: {
+                connect: {
+                  id: dto.roleId,
+                },
+              },
             },
           },
         },
       });
+
       return employee;
     } catch (error) {
       if (error instanceof NotFoundException) {
