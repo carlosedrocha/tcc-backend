@@ -68,7 +68,7 @@ model Category {
   name        String
   description String?
   observation String?
-  dishs       Dish[]
+  dishes      Dish[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -86,7 +86,7 @@ model Item {
   measurementUnit      String?
   measurementUnitValue Float?
   dishIngredients      DishIngredient[]
-  orders               Order[]
+  itemOrders           ItemOrder[]
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   deletedAt            DateTime?
@@ -128,7 +128,7 @@ model Dish {
   categories      Category[]
   dishIngredients DishIngredient[]
   menus           Menu[]
-  orders          Order[]
+  dishOrders      DishOrder[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
@@ -189,15 +189,47 @@ model Tab {
   @@map("tabs")
 }
 
-model Order {
+model DishOrder {
   id        String    @id @default(uuid())
-  tab       Tab       @relation(fields: [tabId], references: [id])
-  tabId     String
-  dishs     Dish[]
-  items     Item[]
+  dish      Dish      @relation(fields: [dishId], references: [id])
+  dishId    String
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   String
+  quantity  Int
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@unique([orderId, dishId])
+
+  @@map("dish_orders")
+}
+
+model ItemOrder {
+  id        String    @id @default(uuid())
+  item      Item      @relation(fields: [itemId], references: [id])
+  itemId    String
+  order     Order     @relation(fields: [orderId], references: [id])
+  orderId   String
+  quantity  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([orderId, itemId])
+
+  @@map("item_orders")
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  tab         Tab         @relation(fields: [tabId], references: [id])
+  tabId       String
+  itemsOrder  ItemOrder[]
+  dishesOrder DishOrder[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  deletedAt   DateTime?
 
   @@map("orders")
 }

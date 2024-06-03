@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DishOrderT {
   @IsNotEmpty()
@@ -6,8 +6,8 @@ export class DishOrderT {
   id: string;
 
   @IsNotEmpty()
-  @IsString()
-  quantity: string;
+  @IsNumber()
+  quantity: number;
 }
 
 export class ItemOrderT {
@@ -16,8 +16,8 @@ export class ItemOrderT {
   id: string;
 
   @IsNotEmpty()
-  @IsString()
-  quantity: string;
+  @IsNumber()
+  quantity: number;
 }
 
 export class CreateOrderDto {
@@ -29,10 +29,10 @@ export class CreateOrderDto {
   // @IsNotEmpty()
   @IsOptional()
   @IsString()
-  dishes: DishOrderT[];
+  dishes?: DishOrderT[];
 
   // @IsNotEmpty()
   @IsOptional()
   @IsString()
-  items: ItemOrderT[];
+  items?: ItemOrderT[];
 }

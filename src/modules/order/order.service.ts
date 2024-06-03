@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateOrderDto } from './dto';
 import { CreateOrderDto } from './dto/order/create-order.dto';
 
 @Injectable()
@@ -14,8 +15,16 @@ export class OrderService {
     try {
       const orders = await this.prisma.order.findMany({
         include: {
-          items: true,
-          dishs: true,
+          itemsOrder: {
+            include: {
+              item: true,
+            },
+          },
+          dishesOrder: {
+            include: {
+              dish: true,
+            },
+          },
         },
       });
 
@@ -32,8 +41,16 @@ export class OrderService {
           id,
         },
         include: {
-          items: true,
-          dishs: true,
+          itemsOrder: {
+            include: {
+              item: true,
+            },
+          },
+          dishesOrder: {
+            include: {
+              dish: true,
+            },
+          },
         },
       });
 
@@ -97,26 +114,6 @@ export class OrderService {
         throw new BadRequestException('Comanda/Conta fechada');
       }
 
-      //todo check if it is including the same dish if quantity > 1
-      //todo refactor into one function
-      const dishConnectIds: string[] = [];
-      const buildDisheConnectIds = dto.dishes.map((dish) => {
-        if (parseInt(dish.quantity) > 1) {
-          dishConnectIds.push(dish.id);
-        }
-
-        return dishConnectIds.push(dish.id);
-      });
-
-      const itemConnectIds: string[] = [];
-      const buildItemsConnectIds = dto.items.map((item) => {
-        if (parseInt(item.quantity) > 1) {
-          itemConnectIds.push(item.id);
-        }
-
-        return itemConnectIds.push(item.id);
-      });
-
       const order = await this.prisma.order.create({
         data: {
           tab: {
@@ -125,16 +122,26 @@ export class OrderService {
             },
           },
           ...(dto.items && {
-            items: {
-              connect: itemConnectIds.map((id) => ({
-                id,
+            itemsOrder: {
+              create: dto.items.map((item) => ({
+                item: {
+                  connect: {
+                    id: item.id,
+                  },
+                },
+                quantity: item.quantity,
               })),
             },
           }),
           ...(dto.dishes && {
-            dishs: {
-              connect: dto.dishes.map((dish) => ({
-                id: dish.id,
+            dishesOrder: {
+              create: dto.dishes.map((dish) => ({
+                dish: {
+                  connect: {
+                    id: dish.id,
+                  },
+                },
+                quantity: dish.quantity,
               })),
             },
           }),
@@ -150,6 +157,128 @@ export class OrderService {
       }
 
       throw new BadRequestException('Erro ao criar pedido');
+    }
+  }
+
+  async updateOrder(orderId: string, dto: UpdateOrderDto) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          itemsOrder: true,
+          dishesOrder: true,
+        },
+      });
+
+      if (!order) {
+        throw new NotFoundException('Pedido não encontrado');
+      }
+
+      if (dto.dishes) {
+        const checkDishes = await this.prisma.dish.findMany({
+          where: {
+            deletedAt: null,
+            id: { in: dto.dishes.map((dish) => dish.id) },
+          },
+        });
+
+        if (checkDishes.length !== dto.dishes.length) {
+          throw new NotFoundException('Algum prato não encontrado');
+        }
+
+        await this.handleDishesOrderUpdate(order.id, dto.dishes);
+      }
+
+      if (dto.items) {
+        const checkItems = await this.prisma.item.findMany({
+          where: {
+            deletedAt: null,
+            id: { in: dto.items.map((item) => item.id) },
+          },
+        });
+
+        if (checkItems.length !== dto.items.length) {
+          throw new NotFoundException('Algum item não encontrado');
+        }
+
+        await this.handleItemsOrderUpdate(order.id, dto.items);
+      }
+
+      return await this.prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          itemsOrder: true,
+          dishesOrder: true,
+        },
+      });
+    } catch (error) {
+      console.log(dto);
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw new BadRequestException('Erro ao atualizar pedido');
+    }
+  }
+
+  private async handleDishesOrderUpdate(orderId: string, dishes: any[]) {
+    for (const dish of dishes) {
+      if (dish.quantity === 0) {
+        await this.prisma.dishOrder.updateMany({
+          where: { orderId, dishId: dish.id },
+          data: { deletedAt: new Date() },
+        });
+      } else {
+        const existingDishOrder = await this.prisma.dishOrder.findUnique({
+          where: { orderId_dishId: { orderId, dishId: dish.id } },
+        });
+
+        if (existingDishOrder) {
+          await this.prisma.dishOrder.update({
+            where: { id: existingDishOrder.id },
+            data: { quantity: dish.quantity },
+          });
+        } else {
+          await this.prisma.dishOrder.create({
+            data: {
+              orderId,
+              dishId: dish.id,
+              quantity: dish.quantity,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  private async handleItemsOrderUpdate(orderId: string, items: any[]) {
+    for (const item of items) {
+      if (item.quantity === 0) {
+        await this.prisma.itemOrder.updateMany({
+          where: { orderId, itemId: item.id },
+          data: { deletedAt: new Date() },
+        });
+      } else {
+        const existingItemOrder = await this.prisma.itemOrder.findUnique({
+          where: { orderId_itemId: { orderId, itemId: item.id } },
+        });
+
+        if (existingItemOrder) {
+          await this.prisma.itemOrder.update({
+            where: { id: existingItemOrder.id },
+            data: { quantity: item.quantity },
+          });
+        } else {
+          await this.prisma.itemOrder.create({
+            data: {
+              orderId,
+              itemId: item.id,
+              quantity: item.quantity,
+            },
+          });
+        }
+      }
     }
   }
 }
