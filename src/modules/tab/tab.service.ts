@@ -81,8 +81,16 @@ export class TabService {
           },
           orders: {
             include: {
-              items: true,
-              dishs: true,
+              itemsOrder: {
+                include: {
+                  item: true,
+                },
+              },
+              dishesOrder: {
+                include: {
+                  dish: true,
+                },
+              },
             },
           },
         },
@@ -110,8 +118,16 @@ export class TabService {
           },
           orders: {
             include: {
-              items: true,
-              dishs: true,
+              itemsOrder: {
+                include: {
+                  item: true,
+                },
+              },
+              dishesOrder: {
+                include: {
+                  dish: true,
+                },
+              },
             },
           },
         },
@@ -160,8 +176,16 @@ export class TabService {
         include: {
           orders: {
             include: {
-              items: true,
-              dishs: true,
+              dishesOrder: {
+                include: {
+                  dish: true,
+                },
+              },
+              itemsOrder: {
+                include: {
+                  item: true,
+                },
+              },
             },
           },
         },
@@ -175,11 +199,11 @@ export class TabService {
       const { orders } = closedTab;
       //todo check this
       orders.map((order) => {
-        order.items.map((item) => {
-          total += item.cost;
+        order.itemsOrder.map((item) => {
+          total += item.item.cost;
         });
-        order.dishs.map((dish) => {
-          total += dish.price;
+        order.dishesOrder.map((dish) => {
+          total += dish.dish.price;
         });
       });
 
