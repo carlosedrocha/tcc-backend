@@ -160,88 +160,125 @@ export class OrderService {
     }
   }
 
-  // async updateOrder(id: string, dto: UpdateOrderDto) {
-  //   try {
-  //     if (dto.dishes) {
-  //       const checkDishes = await this.prisma.dish.findMany({
-  //         where: {
-  //           deletedAt: null,
-  //           id: {
-  //             in: dto.dishes.map((dish) => dish.id),
-  //           },
-  //         },
-  //       });
+  async updateOrder(orderId: string, dto: UpdateOrderDto) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          itemsOrder: true,
+          dishesOrder: true,
+        },
+      });
 
-  //       if (checkDishes.length !== dto.dishes.length) {
-  //         throw new NotFoundException('Algum prato não encontrado');
-  //       }
-  //     }
+      if (!order) {
+        throw new NotFoundException('Pedido não encontrado');
+      }
 
-  //     if (dto.items) {
-  //       const checkItems = await this.prisma.item.findMany({
-  //         where: {
-  //           deletedAt: null,
-  //           id: {
-  //             in: dto.items.map((item) => item.id),
-  //           },
-  //         },
-  //       });
+      if (dto.dishes) {
+        const checkDishes = await this.prisma.dish.findMany({
+          where: {
+            deletedAt: null,
+            id: { in: dto.dishes.map((dish) => dish.id) },
+          },
+        });
 
-  //       if (checkItems.length !== dto.items.length) {
-  //         throw new NotFoundException('Algum item não encontrado');
-  //       }
-  //     }
+        if (checkDishes.length !== dto.dishes.length) {
+          throw new NotFoundException('Algum prato não encontrado');
+        }
 
-  //     const checkTab = await this.prisma.tab.findUnique({
-  //       where: {
-  //         id: dto.tabId,
-  //       },
-  //     });
+        await this.handleDishesOrderUpdate(order.id, dto.dishes);
+      }
 
-  //     if (!checkTab) {
-  //       throw new NotFoundException('Mesa não encontrada');
-  //     }
+      if (dto.items) {
+        const checkItems = await this.prisma.item.findMany({
+          where: {
+            deletedAt: null,
+            id: { in: dto.items.map((item) => item.id) },
+          },
+        });
 
-  //     if (checkTab.closedAt) {
-  //       throw new BadRequestException('Comanda/Conta fechada');
-  //     }
+        if (checkItems.length !== dto.items.length) {
+          throw new NotFoundException('Algum item não encontrado');
+        }
 
-  //     const updatedOrder = await this.prisma.order.update({
-  //       where: {
-  //         id,
-  //       },
-  //       data: {
-  //         tab: {
-  //           connect: {
-  //             id: dto.tabId,
-  //           },
-  //         },
-  //         ...(dto.items && {
-  //           itemsOrder: {
-  //             create: dto.items.map((item) => ({
-  //               item: {
-  //                 connect: {
-  //                   id: item.id,
-  //                 },
-  //               },
-  //               quantity: item.quantity,
-  //             })),
-  //           },
-  //         }),
-  //         ...(dto.dishes && {
-  //           dishesOrder: {
-  //             create: dto.dishes.map((dish) => ({
-  //               dish: {
-  //                 connect: {
-  //                   id: dish.id,
-  //                 },
-  //               },
-  //               quantity: dish.quantity,
-  //             })),
-  //           },
-  //         }),
-  //       },
-  //     });
-  //   } catch (error) {}
-  // }
+        await this.handleItemsOrderUpdate(order.id, dto.items);
+      }
+
+      return await this.prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          itemsOrder: true,
+          dishesOrder: true,
+        },
+      });
+    } catch (error) {
+      console.log(dto);
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw new BadRequestException('Erro ao atualizar pedido');
+    }
+  }
+
+  private async handleDishesOrderUpdate(orderId: string, dishes: any[]) {
+    for (const dish of dishes) {
+      if (dish.quantity === 0) {
+        await this.prisma.dishOrder.updateMany({
+          where: { orderId, dishId: dish.id },
+          data: { deletedAt: new Date() },
+        });
+      } else {
+        const existingDishOrder = await this.prisma.dishOrder.findUnique({
+          where: { orderId_dishId: { orderId, dishId: dish.id } },
+        });
+
+        if (existingDishOrder) {
+          await this.prisma.dishOrder.update({
+            where: { id: existingDishOrder.id },
+            data: { quantity: dish.quantity },
+          });
+        } else {
+          await this.prisma.dishOrder.create({
+            data: {
+              orderId,
+              dishId: dish.id,
+              quantity: dish.quantity,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  private async handleItemsOrderUpdate(orderId: string, items: any[]) {
+    for (const item of items) {
+      if (item.quantity === 0) {
+        await this.prisma.itemOrder.updateMany({
+          where: { orderId, itemId: item.id },
+          data: { deletedAt: new Date() },
+        });
+      } else {
+        const existingItemOrder = await this.prisma.itemOrder.findUnique({
+          where: { orderId_itemId: { orderId, itemId: item.id } },
+        });
+
+        if (existingItemOrder) {
+          await this.prisma.itemOrder.update({
+            where: { id: existingItemOrder.id },
+            data: { quantity: item.quantity },
+          });
+        } else {
+          await this.prisma.itemOrder.create({
+            data: {
+              orderId,
+              itemId: item.id,
+              quantity: item.quantity,
+            },
+          });
+        }
+      }
+    }
+  }
 }

@@ -200,6 +200,8 @@ model DishOrder {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
+  @@unique([orderId, dishId])
+
   @@map("dish_orders")
 }
 
@@ -213,6 +215,8 @@ model ItemOrder {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@unique([orderId, itemId])
 
   @@map("item_orders")
 }

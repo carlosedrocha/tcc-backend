@@ -49,6 +49,12 @@ CREATE TABLE "item_orders" (
     CONSTRAINT "item_orders_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateIndex
+CREATE UNIQUE INDEX "dish_orders_orderId_dishId_key" ON "dish_orders"("orderId", "dishId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "item_orders_orderId_itemId_key" ON "item_orders"("orderId", "itemId");
+
 -- AddForeignKey
 ALTER TABLE "dish_orders" ADD CONSTRAINT "dish_orders_dishId_fkey" FOREIGN KEY ("dishId") REFERENCES "Dish"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
