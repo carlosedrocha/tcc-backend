@@ -21,7 +21,7 @@ export class TabController {
     return await this.tabService.getTabs();
   }
 
-  @Get('by/:id')
+  @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async getTabById(@Param('id') id: string) {
     return await this.tabService.getTabById(id);
