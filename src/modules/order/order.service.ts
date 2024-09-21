@@ -79,6 +79,7 @@ export class OrderService {
             },
           },
         });
+        
 
         if (checkDishes.length !== dto.dishes.length) {
           throw new NotFoundException('Algum prato não encontrado');
@@ -99,7 +100,7 @@ export class OrderService {
           throw new NotFoundException('Algum item não encontrado');
         }
       }
-
+      
       const checkTab = await this.prisma.tab.findUnique({
         where: {
           id: dto.tabId,
@@ -145,6 +146,7 @@ export class OrderService {
               })),
             },
           }),
+          status:dto.status
         },
       });
 

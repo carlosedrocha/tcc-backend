@@ -223,6 +223,7 @@ model Order {
   id          String      @id @default(uuid())
   tab         Tab         @relation(fields: [tabId], references: [id])
   tabId       String
+  status      OrderStatus?
   itemsOrder  ItemOrder[]
   dishesOrder DishOrder[]
   createdAt   DateTime    @default(now())
@@ -236,6 +237,12 @@ model Order {
 enum TabStatus {
   OPEN
   CLOSED
+}
+
+enum OrderStatus {
+  ORDER_PLACED
+  ORDER_IN_PROCESS
+  ORDER_FINALIZED
 }
 
 enum TabOwner {
