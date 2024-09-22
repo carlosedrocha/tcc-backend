@@ -188,6 +188,11 @@ async function main() {
       cost: 15,
       measurementUnit: 'Kg',
       measurementUnitValue: 0.5,
+      stock: {
+        create: {
+          quantity: 5,
+        },
+      },
       type: {
         connect: {
           id: createItemType.id,
