@@ -50,4 +50,12 @@ export class TabController {
   async createTab(@Body() dto: CreateTabDto) {
     return await this.tabService.createTab(dto);
   }
+
+
+  @Put('/bill/:id')
+  @HttpCode(HttpStatus.OK)
+  async tabBill(@Param('id') id: string) {
+    return await this.tabService.tabBill(id);
+  }
+
 }

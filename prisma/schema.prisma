@@ -130,6 +130,7 @@ model Dish {
   dishIngredients DishIngredient[]
   menus           Menu[]
   dishOrders      DishOrder[]
+  recipe          String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
