@@ -28,6 +28,22 @@ export class KanbanService {
 
   // Pega todos os pedidos (útil para visualizar no Kanban)
   async getAllOrders() {
-    return this.prisma.order.findMany();
+    return this.prisma.order.findMany({
+      select: {
+        id: true,
+        status: true,
+        dishesOrder: {
+          select: {
+            dish: {
+              select: {
+                name: true, // Seleciona apenas o nome do prato
+              },
+            },
+          },
+        },
+      },
+    });
   }
+  
+  
 }
