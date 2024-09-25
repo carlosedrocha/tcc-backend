@@ -19,6 +19,8 @@ import { EmployeeModule } from './modules/employee/employee.module';
 import { KanbanController } from './modules/kanban/kanban.controller';
 import { KanbanService } from './modules/kanban/kanban.service';
 import { KanbanModule } from './modules/kanban/kanban.module';
+import { WaiterBellModule } from './modules/waiter-bell/waiter-bell.module';
+import {WaiterBellGateway} from './modules/waiter-bell/waiter-bell.gateway';
 
 @Module({
   imports: [
@@ -38,12 +40,13 @@ import { KanbanModule } from './modules/kanban/kanban.module';
     FileUploadModule,
     EmployeeModule,
     KanbanModule,
+    WaiterBellModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
-    },
+    },   
   ],
 })
 export class AppModule {}
