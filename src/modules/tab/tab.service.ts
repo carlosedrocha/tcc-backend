@@ -145,6 +145,37 @@ export class TabService {
       throw new BadRequestException('Erro ao buscar comanda');
     }
   }
+  
+  async getTabBellById(id: string) {
+
+    try {
+      
+      const tab = await this.prisma.tab.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          entity: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
+        },
+      });
+
+      if (!tab) {
+        throw new NotFoundException(' get idComanda não encontrada');
+      }
+
+      return tab;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Erro ao buscar comanda');
+    }
+  }
 
   async getLasTabNumberTab() {
     try {
@@ -156,7 +187,6 @@ export class TabService {
           tabNumber: true,
         },
       });
-      console.log(tabNumber);
       return tabNumber;
     } catch (error) {
       throw new BadRequestException('Erro ao procurar numero da comanda');

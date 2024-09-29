@@ -46,7 +46,8 @@ import {WaiterBellGateway} from './modules/waiter-bell/waiter-bell.gateway';
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
-    },   
+    }, 
+    
   ],
 })
 export class AppModule {}
