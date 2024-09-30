@@ -23,16 +23,19 @@ export class StockMovementService {
         throw new NotFoundException('Estoque não encontrado');
       }
 
-      const transaction = await this.prisma.transaction.create({
-        data: {
-          amount: dto.transaction.amount,
-          category: dto.transaction.category,
-          description: dto.transaction.description,
-          paymentMethod: dto.transaction.paymentMethod,
-          transactionType: dto.transaction.type,
-          status: dto.transaction.status,
-        },
-      });
+      let transaction;
+      if (dto.transaction) {
+        transaction = await this.prisma.transaction.create({
+          data: {
+            amount: dto.transaction.amount,
+            category: dto.transaction.category,
+            description: dto.transaction.description,
+            paymentMethod: dto.transaction.paymentMethod,
+            transactionType: dto.transaction.type,
+            status: dto.transaction.status,
+          },
+        });
+      }
 
       const stockEntry = await this.prisma.stockMovement.create({
         data: {
