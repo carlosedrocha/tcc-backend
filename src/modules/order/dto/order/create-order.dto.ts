@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { OrderStatus } from '@prisma/client';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class DishOrderT {
   @IsNotEmpty()
@@ -24,6 +25,10 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsString()
   tabId: string;
+
+  @IsEnum(OrderStatus)
+  @IsOptional()
+  status?: OrderStatus;
 
   //todo make at least one required
   // @IsNotEmpty()

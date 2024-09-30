@@ -19,6 +19,9 @@ import { EmployeeModule } from './modules/employee/employee.module';
 import { StockModule } from './modules/stock/stock.module';
 import { StockMovementModule } from './modules/stock-movement/stock-movement.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
+import { KanbanController } from './modules/kanban/kanban.controller';
+import { KanbanService } from './modules/kanban/kanban.service';
+import { KanbanModule } from './modules/kanban/kanban.module';
 
 @Module({
   imports: [
@@ -40,6 +43,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
     StockModule,
     StockMovementModule,
     TransactionsModule,
+    KanbanModule,
   ],
   providers: [
     {
