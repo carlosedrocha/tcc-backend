@@ -12,14 +12,14 @@ const rl = readline.createInterface({
 
 // Envia a mensagem para o bot GPT
 function sendMessageToGPT() {
-  rl.question('You: ', (message) => {
+  rl.question('you: ',(message) => {
     socket.emit('callWaiter', message); // Enviar a mensagem ao servidor WebSocket
     sendMessageToGPT(); // Continuar o loop
   });
 }
 
 // Recebe a resposta do bot GPT
-socket.on('callWaiter', (response) => {
+socket.on('cliente', (response) => {
   console.log('callWaiter: ' + response);
 });
 

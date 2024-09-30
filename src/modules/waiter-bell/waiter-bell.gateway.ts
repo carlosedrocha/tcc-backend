@@ -9,7 +9,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { AccessTokenGuard } from 'src/common/guards';
 import { TabService } from '../tab/tab.service';
-import { Tab } from '@prisma/client';
+import { Entity, Tab } from '@prisma/client';
 
 @WebSocketGateway({
   cors: {
@@ -29,17 +29,13 @@ export class WaiterBellGateway {
     @MessageBody() data: { tabId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    // Obtenha informações do Tab
-    const tab: Tab = await this.tabService.getTabBellById(data.tabId);
-    
-    // Log para verificar se os dados foram retornados corretamente
-    console.log('Tab Data:', tab);
-
+    // Obtenha informações do Tab                                                                               
+    const dataString = JSON.stringify(data).replace(/"/g, '');
+    const tab: Tab = await this.tabService.getTabBellById(dataString);
+    const entity:Entity = await this.tabService.getEntityById(tab.entityId)
+    const message = entity !== undefined ? `Pedido da mesa ${tab.tabNumber} | cliente: ${entity.firstName}`: `Pedido da mesa ${tab.tabNumber} `
     // Emitir um evento específico para a interface do garçom
-    this.server.emit('waiterNotification', {
-      tabId: tab.id,
-      status: tab.status,
-      message: `Pedido da mesa ${tab.id}: Status ${tab.status}`,
-    });
+    this.server.emit('waiterNotification', message);
+    
   }
 }

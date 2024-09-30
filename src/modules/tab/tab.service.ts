@@ -12,6 +12,7 @@ export class TabService {
   constructor(private prisma: PrismaService) {}
 
   async createTab(dto: CreateTabDto) {
+  console.log(dto)
     try {
       const checkUser = await this.prisma.user.findUnique({
         where: {
@@ -42,7 +43,7 @@ export class TabService {
         data: {
           tabNumber: dto.tabNumber,
           userId: dto.userId,
-          entityId: createdEntity.id,
+          entityId: createdEntity?.id ?? null,
         },
       });
 
@@ -155,12 +156,7 @@ export class TabService {
           id: id,
         },
         include: {
-          entity: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
-          },
+          entity:true
         },
       });
 
@@ -176,6 +172,22 @@ export class TabService {
       throw new BadRequestException('Erro ao buscar comanda');
     }
   }
+  async getEntityById(entityId: string) {
+    try{
+      const entity  = await this.prisma.entity.findUnique({
+        where: { id: entityId },
+      });
+      if(!entity){
+        return null;
+      }
+      return entity;
+    }catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+    }
+  
+}
 
   async getLasTabNumberTab() {
     try {
