@@ -15,7 +15,7 @@ datasource db {
 
 generator erd {
   provider = "prisma-erd-generator"
-  output   = "../ERD.png"
+  output   = "../ERD.svg"
 }
 
 model User {
@@ -83,10 +83,11 @@ model Item {
   cost                 Float?
   type                 ItemType         @relation(fields: [itemTypeId], references: [id])
   itemTypeId           String
-  measurementUnit      String?
-  measurementUnitValue Float?
+  measurementUnit      String? // Unidade de medida, ex: kg, litros
+  measurementUnitValue Float? // Quantidade por unidade de medida
   dishIngredients      DishIngredient[]
   itemOrders           ItemOrder[]
+  stock                Stock?
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   deletedAt            DateTime?
@@ -129,6 +130,7 @@ model Dish {
   dishIngredients DishIngredient[]
   menus           Menu[]
   dishOrders      DishOrder[]
+  recipe          String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
@@ -171,20 +173,21 @@ model Permission {
 }
 
 model Tab {
-  id        String    @id @default(uuid())
-  tabNumber Int?
+  id           String        @id @default(uuid())
+  tabNumber    Int?
   //Todo: check = it could be a table number instead of a user
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String
-  entity    Entity?   @relation(fields: [entityId], references: [id])
-  entityId  String?
-  orders    Order[]
-  total     Float?
-  status    TabStatus @default(OPEN)
-  closedAt  DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String
+  entity       Entity?       @relation(fields: [entityId], references: [id])
+  entityId     String?
+  orders       Order[]
+  total        Float?
+  status       TabStatus     @default(OPEN)
+  closedAt     DateTime?
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
 
   @@map("tabs")
 }
@@ -231,6 +234,90 @@ model Order {
   deletedAt   DateTime?
 
   @@map("orders")
+}
+
+model Stock {
+  id             String          @id @default(uuid())
+  item           Item            @relation(fields: [itemId], references: [id])
+  itemId         String          @unique
+  quantity       Int
+  stockMovements StockMovement[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+
+  @@map("stocks")
+}
+
+model StockMovement {
+  id            String       @id @default(uuid())
+  stock         Stock        @relation(fields: [stockId], references: [id])
+  stockId       String
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  transactionId Int? // Relacionamento com a tabela Transaction
+  movementType  MovementType // Tipo de movimentação: Entrada, Saída, Ajuste
+  quantity      Int // Quantidade movimentada
+  description   String? // Descrição do motivo da movimentação
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  @@map("stock_movements")
+}
+
+model Transaction {
+  id              Int                      @id @default(autoincrement())
+  date            DateTime                 @default(now())
+  transactionType TransactionType
+  description     String
+  amount          Float
+  paymentMethod   TransactionPaymentMethod
+  category        TransactionCategory
+  status          TransactionStatus
+  tabId           String?
+  tab             Tab?                     @relation(fields: [tabId], references: [id])
+  stockMovements  StockMovement[] // Relacionamento com as movimentações de estoque
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  deletedAt       DateTime?
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  SALE // Vendas
+  EXPENSE // Despesas
+  INCOME // Recebimentos
+  PAYMENT // Pagamentos
+}
+
+enum TransactionPaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  TRANSFER
+}
+
+enum MovementType {
+  ENTRY
+  EXIT
+  ADJUSTMENT
+}
+
+enum TransactionCategory {
+  FOOD
+  SALARY
+  STOCK
+  BILLS
+  MAINTENANCE
+  OTHER
+}
+
+enum TransactionStatus {
+  PENDING
+  PAID
+  CANCELED
 }
 
 //Enums

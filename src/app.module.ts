@@ -16,6 +16,9 @@ import { OrderModule } from './modules/order/order.module';
 import { TabModule } from './modules/tab/tab.module';
 import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { EmployeeModule } from './modules/employee/employee.module';
+import { StockModule } from './modules/stock/stock.module';
+import { StockMovementModule } from './modules/stock-movement/stock-movement.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
 import { KanbanController } from './modules/kanban/kanban.controller';
 import { KanbanService } from './modules/kanban/kanban.service';
 import { KanbanModule } from './modules/kanban/kanban.module';
@@ -37,6 +40,9 @@ import { KanbanModule } from './modules/kanban/kanban.module';
     TabModule,
     FileUploadModule,
     EmployeeModule,
+    StockModule,
+    StockMovementModule,
+    TransactionsModule,
     KanbanModule,
   ],
   providers: [
