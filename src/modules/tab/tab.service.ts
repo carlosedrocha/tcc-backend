@@ -23,11 +23,33 @@ export class TabService {
           id: dto.userId,
         },
       });
-      console.log(dto.userId);
       if (!checkUser) {
         throw new NotFoundException('Usuário não encontrado');
       }
-
+      const existingTabByCpf = await this.prisma.tab.findFirst({
+        where: {
+          entity: {
+            cpf: dto.entity.cpf,
+          },
+          status: 'OPEN', // Apenas verifica se a comanda está aberta
+        },
+      });
+    
+      if (existingTabByCpf) {
+        throw new Error('CPF já está associado a uma comanda aberta.');
+      }
+    
+      // Verifica se o tabNumber já existe
+      const existingTabByNumber = await this.prisma.tab.findFirst({
+        where: {
+          tabNumber: dto.tabNumber,
+          status: 'OPEN', // Apenas verifica se a comanda está aberta
+        },
+      });
+    
+      if (existingTabByNumber) {
+        throw new Error('O número da comanda já existe.');
+      }
       let createdEntity: Entity | null;
       if (dto.entity) {
         createdEntity = await this.prisma.entity.create({

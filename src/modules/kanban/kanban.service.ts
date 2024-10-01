@@ -32,6 +32,14 @@ export class KanbanService {
       select: {
         id: true,
         status: true,
+        tab: { // Inclui as informações da Tab
+          select: {
+            id: true,
+            tabNumber: true,
+            total: true,
+            status: true,
+          },
+        },
         dishesOrder: {
           select: {
             dish: {
@@ -44,6 +52,7 @@ export class KanbanService {
       },
     });
   }
+  
   
   
 }
