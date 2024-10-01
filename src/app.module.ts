@@ -5,23 +5,21 @@ import { AccessTokenGuard } from './common/guards';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { DishModule } from './modules/dish/dish.module';
-import { ItemModule } from './modules/item/item.module';
-import { PrismaModule } from './modules/prisma/prisma.module';
-import { UserModule } from './modules/user/user.module';
-import { MenuModule } from './modules/menu/menu.module';
-import { RoleModule } from './modules/role/role.module';
-import { PermissionModule } from './modules/permission/permission.module';
-import { ItemTypeModule } from './modules/item-type/item-type.module';
-import { OrderModule } from './modules/order/order.module';
-import { TabModule } from './modules/tab/tab.module';
-import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { EmployeeModule } from './modules/employee/employee.module';
-import { StockModule } from './modules/stock/stock.module';
-import { StockMovementModule } from './modules/stock-movement/stock-movement.module';
-import { TransactionsModule } from './modules/transactions/transactions.module';
-import { KanbanController } from './modules/kanban/kanban.controller';
-import { KanbanService } from './modules/kanban/kanban.service';
+import { FileUploadModule } from './modules/file-upload/file-upload.module';
+import { ItemTypeModule } from './modules/item-type/item-type.module';
+import { ItemModule } from './modules/item/item.module';
 import { KanbanModule } from './modules/kanban/kanban.module';
+import { MenuModule } from './modules/menu/menu.module';
+import { OrderModule } from './modules/order/order.module';
+import { PermissionModule } from './modules/permission/permission.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { RoleModule } from './modules/role/role.module';
+import { StockMovementModule } from './modules/stock-movement/stock-movement.module';
+import { StockModule } from './modules/stock/stock.module';
+import { TabModule } from './modules/tab/tab.module';
+import { TransactionsModule } from './modules/transactions/transactions.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
