@@ -26,14 +26,15 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
+  handleRequest(err, user, info, context) {
     // Custom handling of authentication errors
     if (err || !user) {
-      console.error('aa', err);
-
+      console.error('Authentication Error:', err);
       throw err || new UnauthorizedException();
     }
-    console.log(user);
-    return user; // Return the validated user
+    // Attach user to the request object
+    const req = context.switchToHttp().getRequest();
+    req.user = user; // Attach the user info to the request
+    return user; // This is added to req.user by Passport
   }
 }
