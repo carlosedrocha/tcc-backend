@@ -10,6 +10,7 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { ItemTypeModule } from './modules/item-type/item-type.module';
 import { ItemModule } from './modules/item/item.module';
 import { KanbanModule } from './modules/kanban/kanban.module';
+import { LogModule } from './modules/log/log.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { OrderModule } from './modules/order/order.module';
 import { PermissionModule } from './modules/permission/permission.module';
@@ -42,6 +43,7 @@ import { UserModule } from './modules/user/user.module';
     StockMovementModule,
     TransactionsModule,
     KanbanModule,
+    LogModule,
   ],
   providers: [
     {

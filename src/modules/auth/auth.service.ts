@@ -36,10 +36,11 @@ export class AuthService {
   }
 
   async generateToken(payload: User) {
+    console.log('Payload:', payload); // Log the payload to verify it has the id
     return {
       userId: payload.id,
       bearer_token: this.jwtService.sign(
-        { email: payload.email },
+        { email: payload.email, sub: payload.id },
         {
           secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
           expiresIn: '6h',

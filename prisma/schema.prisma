@@ -28,6 +28,7 @@ model User {
   role           Role?     @relation(fields: [roleId], references: [id])
   roleId         Int?
   tabs           Tab[]
+  logs           Log[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
@@ -223,14 +224,14 @@ model ItemOrder {
 }
 
 model Order {
-  id          String      @id @default(uuid())
-  tab         Tab         @relation(fields: [tabId], references: [id])
+  id          String       @id @default(uuid())
+  tab         Tab          @relation(fields: [tabId], references: [id])
   tabId       String
   status      OrderStatus?
   itemsOrder  ItemOrder[]
   dishesOrder DishOrder[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
 
   @@map("orders")
@@ -282,6 +283,17 @@ model Transaction {
   deletedAt       DateTime?
 
   @@map("transactions")
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  path      String
+  method    String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  payload   Json?
+  status    Int
+  createdAt DateTime @default(now())
 }
 
 enum TransactionType {
