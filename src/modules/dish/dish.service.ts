@@ -43,6 +43,7 @@ export class DishService {
           description: dto.description,
           price: dto.price,
           photoUrl: dto.photoUrl,
+          recipe: dto.recipe,
           dishIngredients: {
             create: dto.items.map((itemId) => ({
               item: {

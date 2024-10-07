@@ -5,11 +5,16 @@ import {
 } from '@nestjs/common';
 import { Entity } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateTransactionDto } from '../transactions/dto';
+import { TransactionsService } from '../transactions/transactions.service';
 import { CreateTabDto } from './dto';
 
 @Injectable()
 export class TabService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private transaction: TransactionsService,
+  ) {}
 
   async createTab(dto: CreateTabDto) {
     try {
@@ -18,11 +23,33 @@ export class TabService {
           id: dto.userId,
         },
       });
-      console.log(dto.userId);
       if (!checkUser) {
         throw new NotFoundException('Usuário não encontrado');
       }
-
+      const existingTabByCpf = await this.prisma.tab.findFirst({
+        where: {
+          entity: {
+            cpf: dto.entity.cpf,
+          },
+          status: 'OPEN', // Apenas verifica se a comanda está aberta
+        },
+      });
+    
+      if (existingTabByCpf) {
+        throw new Error('CPF já está associado a uma comanda aberta.');
+      }
+    
+      // Verifica se o tabNumber já existe
+      const existingTabByNumber = await this.prisma.tab.findFirst({
+        where: {
+          tabNumber: dto.tabNumber,
+          status: 'OPEN', // Apenas verifica se a comanda está aberta
+        },
+      });
+    
+      if (existingTabByNumber) {
+        throw new Error('O número da comanda já existe.');
+      }
       let createdEntity: Entity | null;
       if (dto.entity) {
         createdEntity = await this.prisma.entity.create({
@@ -173,30 +200,85 @@ export class TabService {
           status: 'CLOSED',
           closedAt: new Date(),
         },
-        include: {
-          orders: {
-            include: {
-              dishesOrder: {
-                include: {
-                  dish: true,
-                },
-              },
-              itemsOrder: {
-                include: {
-                  item: true,
-                },
-              },
-            },
-          },
-        },
       });
 
       if (!closedTab) {
         throw new NotFoundException('Comanda não encontrada');
       }
 
+      return { closedTab };
+    } catch (error) {
+      throw new BadRequestException('Erro ao fechar comanda');
+    }
+  }
+
+  async tabBill(id: string) {
+    try {
+      const tab = await this.prisma.tab.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          orders: {
+            include: {
+              itemsOrder: {
+                include: {
+                  item: true,
+                },
+              },
+              dishesOrder: {
+                include: {
+                  dish: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (!tab) {
+        throw new NotFoundException('Comanda não encontrada');
+      }
+
+      const amount = getBillTotalValue(tab);
+      //math.random() between 0 and 1
+      const chancesOfSuccess = Math.random();
+      console.log(chancesOfSuccess);
+      const transactionDto: CreateTransactionDto = {
+        amount: amount,
+        category: 'FOOD',
+        paymentMethod: 'CREDIT_CARD',
+        status: 'PAID',
+        tabId: id,
+        type: 'SALE',
+        description: 'Pagamento da Comanda ' + tab.tabNumber,
+      };
+
+      if (chancesOfSuccess < 0.2) {
+        throw new BadRequestException(
+          'Erro ao processar pagamento, tente novamente',
+        );
+      }
+      const processTransaction = await this.transaction.createTransaction(
+        transactionDto,
+      );
+
+      const closeTab = await this.closeTab(id);
+      return {
+        transaction: processTransaction,
+        closeTab: closeTab,
+        bill: {
+          amount: amount,
+        },
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Erro ao gerar boleto');
+    }
+    function getBillTotalValue(tab) {
       let total = 0;
-      const { orders } = closedTab;
+      const { orders } = tab;
       //todo check this
       orders.map((order) => {
         order.itemsOrder.map((item) => {
@@ -207,9 +289,7 @@ export class TabService {
         });
       });
 
-      return { closedTab, total };
-    } catch (error) {
-      throw new BadRequestException('Erro ao fechar comanda');
+      return total;
     }
   }
 }
