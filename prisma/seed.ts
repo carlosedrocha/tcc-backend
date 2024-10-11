@@ -53,7 +53,7 @@ async function main() {
     { name: 'order:register', roleId: managerRole.id },
     { name: 'order:read', roleId: managerRole.id },
     { name: 'order:delete', roleId: managerRole.id },
-  ]
+  ];
   const waiterPermissionsList = [
     { name: 'menu:read', roleId: waiterRole.id },
     { name: 'tab:register', roleId: waiterRole.id },
@@ -61,26 +61,29 @@ async function main() {
     { name: 'order:register', roleId: waiterRole.id },
     { name: 'order:read', roleId: waiterRole.id },
     { name: 'order:delete', roleId: waiterRole.id },
-    { name:'kanban:register',roleId:waiterRole.id },
-    { name:'kanban:read',roleId:waiterRole.id }
-    
+    { name: 'kanban:register', roleId: waiterRole.id },
+    { name: 'kanban:read', roleId: waiterRole.id },
   ];
-  const chefPermissionList = [  
-    { name:'kanban:register',roleId:chefRole.id },
-    { name:'kanban:read',roleId:chefRole.id }
-  ]
+  const chefPermissionList = [
+    { name: 'kanban:register', roleId: chefRole.id },
+    { name: 'kanban:read', roleId: chefRole.id },
+  ];
   const clientPermissionList = [
     { name: 'menu:read', roleId: clientRole.id },
     { name: 'order:register', roleId: clientRole.id },
     { name: 'order:read', roleId: clientRole.id },
-  ]
-  const allPermissionsList = [...managerPermissionsList, ...waiterPermissionsList,...chefPermissionList,...clientPermissionList];
+  ];
+  const allPermissionsList = [
+    ...managerPermissionsList,
+    ...waiterPermissionsList,
+    ...chefPermissionList,
+    ...clientPermissionList,
+  ];
 
   await prisma.permission.createMany({
     data: allPermissionsList,
     skipDuplicates: true, // Ignora permissões que já existem
   });
-
 
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@admin.com' },
@@ -89,7 +92,7 @@ async function main() {
       id: 'c0923c25-99cc-4bd7-be1a-c51c8a30749d',
       email: 'admin@admin.com',
       hashedPassword:
-        '$2b$10$K19JB1KW7OL2MNziH4Sn7u0P/ANseoWqYMNS1gHv10CnUQwcJXc/O',
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
       role: {
         connect: {
           id: managerRole.id,
