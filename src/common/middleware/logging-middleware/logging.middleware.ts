@@ -9,7 +9,6 @@ export class LoggingMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const { method, path, body, baseUrl } = req;
-    console.log(req.baseUrl);
     const authHeader = req.headers['authorization'] || null;
     let userId = null;
 
@@ -18,9 +17,6 @@ export class LoggingMiddleware implements NestMiddleware {
       userId = getUserIdFromToken(token); // Call the helper function with the secret
       console.log(`userId`, userId); // Log the userId
     }
-
-    // Log the request user object directly
-    console.log(`req.user`, req.headers.authorization);
 
     const start = Date.now();
 

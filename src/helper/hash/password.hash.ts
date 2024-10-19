@@ -5,6 +5,6 @@ export function hashPassword(password: string) {
 }
 
 // Function to to compare encrypted password with plain text password
-export function verifyPassword(password: string, hashedPassword: string) {
+export async function verifyPassword(password: string, hashedPassword: string) {
   return bcrypt.compare(password, hashedPassword);
 }
