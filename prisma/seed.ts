@@ -53,6 +53,9 @@ async function main() {
     { name: 'order:register', roleId: managerRole.id },
     { name: 'order:read', roleId: managerRole.id },
     { name: 'order:delete', roleId: managerRole.id },
+    { name: 'spotify:register', roleId: managerRole.id },
+    { name: 'spotify:read', roleId: managerRole.id },
+    { name: 'spotify:delete', roleId: managerRole.id },
   ];
   const waiterPermissionsList = [
     { name: 'menu:read', roleId: waiterRole.id },
@@ -72,6 +75,8 @@ async function main() {
     { name: 'menu:read', roleId: clientRole.id },
     { name: 'order:register', roleId: clientRole.id },
     { name: 'order:read', roleId: clientRole.id },
+    { name: 'spotify:register', roleId: managerRole.id },
+    { name: 'spotify:read', roleId: managerRole.id },
   ];
   const allPermissionsList = [
     ...managerPermissionsList,
