@@ -21,6 +21,7 @@ import { StockModule } from './modules/stock/stock.module';
 import { TabModule } from './modules/tab/tab.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { UserModule } from './modules/user/user.module';
+import { SpotifyModule } from './modules/spotify/spotify.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UserModule } from './modules/user/user.module';
     TransactionsModule,
     KanbanModule,
     LogModule,
+    SpotifyModule,
   ],
   providers: [
     {
