@@ -3,148 +3,91 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   //todo add all permissions
-  const adminPermissionsList = [
-    {
-      name: 'employee:register',
+  const managerRole = await prisma.role.create({
+    data: {
+      name: 'Manager',
     },
-    {
-      name: 'employee:read',
+  });
+  const waiterRole = await prisma.role.create({
+    data: {
+      name: 'waiter',
     },
-    {
-      name: 'employee:delete',
+  });
+  const chefRole = await prisma.role.create({
+    data: {
+      name: 'chef',
     },
-    {
-      name: 'menu:register',
+  });
+  const clientRole = await prisma.role.create({
+    data: {
+      name: 'client',
     },
-    {
-      name: 'menu:read',
-    },
-    {
-      name: 'menu:delete',
-    },
-    {
-      name: 'dish:register',
-    },
-    {
-      name: 'dish:read',
-    },
-    {
-      name: 'dish:delete',
-    },
-    {
-      name: 'item:register',
-    },
-    {
-      name: 'item:read',
-    },
-    {
-      name: 'item:delete',
-    },
-    {
-      name: 'itemType:register',
-    },
-    {
-      name: 'itemType:read',
-    },
-    {
-      name: 'itemType:delete',
-    },
-    {
-      name: 'category:register',
-    },
-    {
-      name: 'category:read',
-    },
-    {
-      name: 'category:delete',
-    },
-    {
-      name: 'role:register',
-    },
-    {
-      name: 'role:read',
-    },
-    {
-      name: 'role:delete',
-    },
-    {
-      name: 'tab:register',
-    },
-    {
-      name: 'tab:read',
-    },
-    {
-      name: 'tab:delete',
-    },
-    {
-      name: 'order:register',
-    },
-    {
-      name: 'order:read',
-    },
-    {
-      name: 'order:delete',
-    },
-  ];
+  });
 
+  // Lista de permissões que o Manager terá (podem ser as mesmas do admin)
+  const managerPermissionsList = [
+    { name: 'employee:register', roleId: managerRole.id },
+    { name: 'employee:read', roleId: managerRole.id },
+    { name: 'employee:delete', roleId: managerRole.id },
+    { name: 'menu:register', roleId: managerRole.id },
+    { name: 'menu:read', roleId: managerRole.id },
+    { name: 'menu:delete', roleId: managerRole.id },
+    { name: 'dish:register', roleId: managerRole.id },
+    { name: 'dish:read', roleId: managerRole.id },
+    { name: 'dish:delete', roleId: managerRole.id },
+    { name: 'item:register', roleId: managerRole.id },
+    { name: 'item:read', roleId: managerRole.id },
+    { name: 'item:delete', roleId: managerRole.id },
+    { name: 'itemType:register', roleId: managerRole.id },
+    { name: 'itemType:read', roleId: managerRole.id },
+    { name: 'itemType:delete', roleId: managerRole.id },
+    { name: 'category:register', roleId: managerRole.id },
+    { name: 'category:read', roleId: managerRole.id },
+    { name: 'category:delete', roleId: managerRole.id },
+    { name: 'role:register', roleId: managerRole.id },
+    { name: 'role:read', roleId: managerRole.id },
+    { name: 'role:delete', roleId: managerRole.id },
+    { name: 'tab:register', roleId: managerRole.id },
+    { name: 'tab:read', roleId: managerRole.id },
+    { name: 'tab:delete', roleId: managerRole.id },
+    { name: 'order:register', roleId: managerRole.id },
+    { name: 'order:read', roleId: managerRole.id },
+    { name: 'order:delete', roleId: managerRole.id },
+    { name: 'spotify:register', roleId: managerRole.id },
+    { name: 'spotify:read', roleId: managerRole.id },
+    { name: 'spotify:delete', roleId: managerRole.id },
+  ];
   const waiterPermissionsList = [
-    {
-      name: 'menu:read',
-    },
-    {
-      name: 'tab:register',
-    },
-    {
-      name: 'tab:read',
-    },
-    {
-      name: 'tab:delete',
-    },
-    {
-      name: 'order:register',
-    },
-    {
-      name: 'order:read',
-    },
-    {
-      name: 'order:delete',
-    },
+    { name: 'menu:read', roleId: waiterRole.id },
+    { name: 'tab:register', roleId: waiterRole.id },
+    { name: 'tab:read', roleId: waiterRole.id },
+    { name: 'order:register', roleId: waiterRole.id },
+    { name: 'order:read', roleId: waiterRole.id },
+    { name: 'order:delete', roleId: waiterRole.id },
+    { name: 'kanban:register', roleId: waiterRole.id },
+    { name: 'kanban:read', roleId: waiterRole.id },
+  ];
+  const chefPermissionList = [
+    { name: 'kanban:register', roleId: chefRole.id },
+    { name: 'kanban:read', roleId: chefRole.id },
+  ];
+  const clientPermissionList = [
+    { name: 'menu:read', roleId: clientRole.id },
+    { name: 'order:register', roleId: clientRole.id },
+    { name: 'order:read', roleId: clientRole.id },
+    { name: 'spotify:register', roleId: managerRole.id },
+    { name: 'spotify:read', roleId: managerRole.id },
+  ];
+  const allPermissionsList = [
+    ...managerPermissionsList,
+    ...waiterPermissionsList,
+    ...chefPermissionList,
+    ...clientPermissionList,
   ];
 
-  const adminRole = await prisma.role.upsert({
-    where: { id: 0 },
-    update: { id: 0 },
-    create: {
-      id: 0,
-      name: 'Admin',
-      permissions: {
-        createMany: {
-          data: adminPermissionsList,
-          skipDuplicates: true,
-        },
-      },
-    },
-  });
-
-  const getWaiterPermissions = await prisma.permission.findMany({
-    where: {
-      OR: waiterPermissionsList.map((permission) => ({
-        name: permission.name,
-      })),
-    },
-  });
-  const waiterRole = await prisma.role.upsert({
-    where: { id: 1 },
-    update: { id: 1 },
-    create: {
-      id: 1,
-      name: 'Waiter',
-      permissions: {
-        connect: getWaiterPermissions.map((permission) => ({
-          id: permission.id,
-        })),
-      },
-    },
+  await prisma.permission.createMany({
+    data: allPermissionsList,
+    skipDuplicates: true, // Ignora permissões que já existem
   });
 
   const adminUser = await prisma.user.upsert({
@@ -154,10 +97,10 @@ async function main() {
       id: 'c0923c25-99cc-4bd7-be1a-c51c8a30749d',
       email: 'admin@admin.com',
       hashedPassword:
-        '$2b$10$K19JB1KW7OL2MNziH4Sn7u0P/ANseoWqYMNS1gHv10CnUQwcJXc/O',
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
       role: {
         connect: {
-          id: adminRole.id,
+          id: managerRole.id,
         },
       },
       entity: {

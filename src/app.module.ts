@@ -10,6 +10,8 @@ import { FileUploadModule } from './modules/file-upload/file-upload.module';
 import { ItemTypeModule } from './modules/item-type/item-type.module';
 import { ItemModule } from './modules/item/item.module';
 import { KanbanModule } from './modules/kanban/kanban.module';
+import { WaiterBellModule } from './modules/waiter-bell/waiter-bell.module';
+import {WaiterBellGateway} from './modules/waiter-bell/waiter-bell.gateway';
 import { LogModule } from './modules/log/log.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { OrderModule } from './modules/order/order.module';
@@ -44,6 +46,7 @@ import { SpotifyModule } from './modules/spotify/spotify.module';
     StockMovementModule,
     TransactionsModule,
     KanbanModule,
+    WaiterBellModule,
     LogModule,
     SpotifyModule,
   ],
@@ -51,7 +54,8 @@ import { SpotifyModule } from './modules/spotify/spotify.module';
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
-    },
+    }, 
+    
   ],
 })
 export class AppModule {}

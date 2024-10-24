@@ -17,6 +17,7 @@ export class TabService {
   ) {}
 
   async createTab(dto: CreateTabDto) {
+  console.log(dto)
     try {
       const checkUser = await this.prisma.user.findUnique({
         where: {
@@ -69,7 +70,7 @@ export class TabService {
         data: {
           tabNumber: dto.tabNumber,
           userId: dto.userId,
-          entityId: createdEntity.id,
+          entityId: createdEntity?.id ?? null,
         },
       });
 
@@ -172,6 +173,48 @@ export class TabService {
       throw new BadRequestException('Erro ao buscar comanda');
     }
   }
+  
+  async getTabBellById(id: string) {
+
+    try {
+      
+      const tab = await this.prisma.tab.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          entity:true
+        },
+      });
+
+      if (!tab) {
+        throw new NotFoundException(' get idComanda não encontrada');
+      }
+
+      return tab;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+      throw new BadRequestException('Erro ao buscar comanda');
+    }
+  }
+  async getEntityById(entityId: string) {
+    try{
+      const entity  = await this.prisma.entity.findUnique({
+        where: { id: entityId },
+      });
+      if(!entity){
+        return null;
+      }
+      return entity;
+    }catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+    }
+  
+}
 
   async getLasTabNumberTab() {
     try {
@@ -183,7 +226,6 @@ export class TabService {
           tabNumber: true,
         },
       });
-      console.log(tabNumber);
       return tabNumber;
     } catch (error) {
       throw new BadRequestException('Erro ao procurar numero da comanda');

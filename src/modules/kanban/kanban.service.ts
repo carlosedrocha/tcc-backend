@@ -4,7 +4,7 @@ import { UpdateOrderStatusDto } from './dto/kanban/update-order-statu.dto';
 
 @Injectable()
 export class KanbanService {
-    constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {}
 
   // Atualiza o status de um pedido
   async updateStatus(updateOrderStatusDto: UpdateOrderStatusDto) {
@@ -32,7 +32,8 @@ export class KanbanService {
       select: {
         id: true,
         status: true,
-        tab: { // Inclui as informações da Tab
+        tab: {
+          // Inclui as informações da Tab
           select: {
             id: true,
             tabNumber: true,
@@ -44,15 +45,13 @@ export class KanbanService {
           select: {
             dish: {
               select: {
-                name: true, // Seleciona apenas o nome do prato
+                name: true,
               },
             },
+            createdAt: true,
           },
         },
       },
     });
   }
-  
-  
-  
 }

@@ -22,21 +22,44 @@ export class AuthService {
   ) {}
   async localSignIn(dto: SignInDto): Promise<any> {
     try {
+      // Find the user by email
       const user = await this.userService.findUserByEmail(dto.email);
       if (!user) {
-        throw new UnauthorizedException('Usuário ou Senha Inválidos');
+        console.log('Usuário Inválido');
+        throw new UnauthorizedException('Usuário Inválido');
       }
-      if (await verifyPassword(dto.password, user.hashedPassword)) {
-        return await this.generateToken(user);
+
+      // Check if the password is valid
+      const isPasswordValid = await verifyPassword(
+        dto.password,
+        user.hashedPassword,
+      );
+      if (!isPasswordValid) {
+        console.log('Senha Inválida');
+        throw new UnauthorizedException('Senha Inválida');
       }
-      throw new UnauthorizedException('Usuário ou Senha Inválidos');
+
+      // Generate access token
+      const accessToken = await this.generateToken(user);
+
+      // Fetch user role and permissions
+      const userWithRole = await this.userService.getUserRoleAndPermissoes(
+        user.id,
+      );
+
+      // Return the access token and user role
+      return {
+        ...accessToken,
+        user: userWithRole || null, // Fallback to null if no role is found
+      };
     } catch (error) {
-      throw new UnauthorizedException('Usuário ou Senha Inválidos');
+      console.log(error);
+      throw new UnauthorizedException(
+        'Usuário ou Senha Inválidos ' + error.message,
+      );
     }
   }
-
   async generateToken(payload: User) {
-    console.log('Payload:', payload); // Log the payload to verify it has the id
     return {
       userId: payload.id,
       bearer_token: this.jwtService.sign(

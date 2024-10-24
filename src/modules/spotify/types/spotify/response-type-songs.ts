@@ -17,6 +17,25 @@ export interface ResponseTypeSongs {
   type: MainType;
   uri: string;
 }
+export interface MusicInQueue {
+  id: string; // ID único da música no Spotify
+  name: string;
+  albumName: string;
+  durationMs: number;
+  imageUrl: string;
+  url: string;
+  likes: number; // Contagem de likes
+  addedAt: Date; // Data de adição à fila (para desempate em likes)
+}
+
+export interface SimplifiedTrack {
+  id: string;
+  name: string;
+  albumName: string;
+  durationMs: number;
+  imageUrl: string;
+  url: string;
+}
 
 export interface Album {
   album_type: AlbumTypeEnum;

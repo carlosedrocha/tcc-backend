@@ -22,6 +22,12 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
       return true; // Allow access if the route is marked as public
     }
 
+    // Check if the request is from a WebSocket
+    if (context.getType() === 'ws') {
+      // Allow access without token or user validation
+      return true; // Permit access to WebSocket
+    }
+
     // Call the canActivate method of the parent class (AuthGuard('jwt'))
     return super.canActivate(context);
   }
