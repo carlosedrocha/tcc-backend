@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 async function main() {
   //todo add all permissions
+
+  console.log('Rodando seed');
   const managerRole = await prisma.role.create({
     data: {
       name: 'Manager',
@@ -184,6 +186,7 @@ async function main() {
       },
     },
   });
+  console.log('Seed rodada com sucesso');
 }
 main()
   .then(async () => {
