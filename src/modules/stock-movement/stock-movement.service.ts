@@ -45,7 +45,7 @@ export class StockMovementService {
           movementType: dto.movementType,
 
           //todo: isolate this
-          transactionId: transaction.id,
+          ...(transaction && { transactionId: transaction.id }),
         },
       });
 

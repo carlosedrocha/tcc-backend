@@ -15,9 +15,11 @@ export class AddStockEntryDto {
   @IsNumber()
   quantity: number;
 
+  @IsOptional()
+  @IsNotEmpty()
   @ValidateNested()
   @Type(() => CreateTransactionDto)
-  transaction: CreateTransactionDto;
+  transaction?: CreateTransactionDto;
 
   @IsNotEmpty()
   @IsEnum(MovementType)

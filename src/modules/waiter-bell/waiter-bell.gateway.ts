@@ -1,15 +1,15 @@
 import { UseGuards } from '@nestjs/common';
 import {
+  ConnectedSocket,
+  MessageBody,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
 } from '@nestjs/websockets';
+import { Entity, Tab } from '@prisma/client';
 import { Server, Socket } from 'socket.io';
 import { AccessTokenGuard } from 'src/common/guards';
 import { TabService } from '../tab/tab.service';
-import { Entity, Tab } from '@prisma/client';
 
 @WebSocketGateway({
   cors: {
@@ -29,13 +29,15 @@ export class WaiterBellGateway {
     @MessageBody() data: { tabId: string },
     @ConnectedSocket() client: Socket,
   ) {
-    // Obtenha informações do Tab                                                                               
+    // Obtenha informações do Tab
     const dataString = JSON.stringify(data).replace(/"/g, '');
     const tab: Tab = await this.tabService.getTabBellById(dataString);
-    const entity:Entity = await this.tabService.getEntityById(tab.entityId)
-    const message = entity !== undefined ? `Pedido da mesa ${tab.tabNumber} | cliente: ${entity.firstName}`: `Pedido da mesa ${tab.tabNumber} `
+    const entity: Entity = await this.tabService.getEntityById(tab.entityId);
+    const message =
+      entity !== undefined
+        ? `Pedido da comanda ${tab.tabNumber} | cliente: ${entity.firstName}`
+        : `Pedido da comanda ${tab.tabNumber} `;
     // Emitir um evento específico para a interface do garçom
     this.server.emit('waiterNotification', message);
-    
   }
 }

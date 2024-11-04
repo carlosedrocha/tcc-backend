@@ -4,12 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { StockMovementService } from '../stock-movement/stock-movement.service';
 import { UpdateOrderDto } from './dto';
 import { CreateOrderDto } from './dto/order/create-order.dto';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private stockMovementService: StockMovementService,
+  ) {}
 
   async getOrders() {
     try {
@@ -70,66 +74,132 @@ export class OrderService {
 
   async createOrder(dto: CreateOrderDto) {
     try {
+      let checkDishes = [];
+      let checkItems = [];
+
+      // Check for existing dishes
       if (dto.dishes) {
-        const checkDishes = await this.prisma.dish.findMany({
+        checkDishes = await this.prisma.dish.findMany({
           where: {
             deletedAt: null,
             id: {
               in: dto.dishes.map((dish) => dish.id),
             },
           },
+          include: {
+            dishIngredients: {
+              include: { item: { include: { stock: true } } },
+            },
+          },
         });
-        
 
         if (checkDishes.length !== dto.dishes.length) {
-          throw new NotFoundException('Algum prato não encontrado');
+          throw new NotFoundException('Some dishes not found');
+        }
+
+        // Validate stock for each dish's ingredients
+        for (const dish of checkDishes) {
+          for (const ingredient of dish.dishIngredients) {
+            const requiredQuantity =
+              ingredient.quantity *
+              dto.dishes.find((d) => d.id === dish.id).quantity;
+            const currentStock = ingredient.item.stock?.quantity || 0;
+
+            if (currentStock < requiredQuantity) {
+              //todo: update to disabled
+              throw new BadRequestException(
+                `Insufficient stock for ingredient: ${ingredient.item.name}`,
+              );
+            }
+          }
         }
       }
 
+      // Check for existing items
       if (dto.items) {
-        const checkItems = await this.prisma.item.findMany({
+        checkItems = await this.prisma.item.findMany({
           where: {
             deletedAt: null,
             id: {
               in: dto.items.map((item) => item.id),
             },
           },
+          include: { stock: true },
         });
 
         if (checkItems.length !== dto.items.length) {
-          throw new NotFoundException('Algum item não encontrado');
+          throw new NotFoundException('Some items not found');
+        }
+
+        // Validate stock for each item
+        for (const item of checkItems) {
+          const requiredQuantity = dto.items.find(
+            (i) => i.id === item.id,
+          ).quantity;
+          const currentStock = item.stock?.quantity || 0;
+
+          if (currentStock < requiredQuantity) {
+            throw new BadRequestException(
+              `Insufficient stock for item: ${item.name}`,
+            );
+          }
         }
       }
-      
+
+      // Check if tab exists and is open
       const checkTab = await this.prisma.tab.findUnique({
-        where: {
-          id: dto.tabId,
-        },
+        where: { id: dto.tabId },
       });
 
       if (!checkTab) {
-        throw new NotFoundException('Mesa não encontrada');
+        throw new NotFoundException('Table not found');
       }
 
       if (checkTab.closedAt) {
-        throw new BadRequestException('Comanda/Conta fechada');
+        throw new BadRequestException('Tab is closed');
       }
 
+      // Register stock movements for each dish's ingredients
+      if (dto.dishes) {
+        for (const dish of checkDishes) {
+          for (const ingredient of dish.dishIngredients) {
+            const requiredQuantity =
+              ingredient.quantity *
+              dto.dishes.find((d) => d.id === dish.id).quantity;
+            await this.stockMovementService.addStockEntry(
+              ingredient.item.stock.id,
+              {
+                quantity: -requiredQuantity,
+                movementType: 'EXIT',
+                description: `Stock exit for dish preparation: ${dish.name}`,
+              },
+            );
+          }
+        }
+      }
+
+      // Register stock movements for each item
+      if (dto.items) {
+        for (const item of checkItems) {
+          const requiredQuantity = dto.items.find(
+            (i) => i.id === item.id,
+          ).quantity;
+          await this.stockMovementService.addStockEntry(item.stock.id, {
+            quantity: -requiredQuantity,
+            movementType: 'EXIT',
+            description: `Stock exit for item: ${item.name}`,
+          });
+        }
+      }
+
+      // Create the order
       const order = await this.prisma.order.create({
         data: {
-          tab: {
-            connect: {
-              id: dto.tabId,
-            },
-          },
+          tab: { connect: { id: dto.tabId } },
           ...(dto.items && {
             itemsOrder: {
               create: dto.items.map((item) => ({
-                item: {
-                  connect: {
-                    id: item.id,
-                  },
-                },
+                item: { connect: { id: item.id } },
                 quantity: item.quantity,
               })),
             },
@@ -137,16 +207,12 @@ export class OrderService {
           ...(dto.dishes && {
             dishesOrder: {
               create: dto.dishes.map((dish) => ({
-                dish: {
-                  connect: {
-                    id: dish.id,
-                  },
-                },
+                dish: { connect: { id: dish.id } },
                 quantity: dish.quantity,
               })),
             },
           }),
-          status:dto.status
+          status: dto.status,
         },
       });
 
@@ -154,11 +220,12 @@ export class OrderService {
     } catch (error) {
       console.log(dto);
       console.log(error);
+
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
 
-      throw new BadRequestException('Erro ao criar pedido');
+      throw new BadRequestException('Error creating order');
     }
   }
 

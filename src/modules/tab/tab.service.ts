@@ -17,7 +17,7 @@ export class TabService {
   ) {}
 
   async createTab(dto: CreateTabDto) {
-  console.log(dto)
+    console.log(dto);
     try {
       const checkUser = await this.prisma.user.findUnique({
         where: {
@@ -35,11 +35,11 @@ export class TabService {
           status: 'OPEN', // Apenas verifica se a comanda está aberta
         },
       });
-    
+
       if (existingTabByCpf) {
         throw new Error('CPF já está associado a uma comanda aberta.');
       }
-    
+
       // Verifica se o tabNumber já existe
       const existingTabByNumber = await this.prisma.tab.findFirst({
         where: {
@@ -47,7 +47,7 @@ export class TabService {
           status: 'OPEN', // Apenas verifica se a comanda está aberta
         },
       });
-    
+
       if (existingTabByNumber) {
         throw new Error('O número da comanda já existe.');
       }
@@ -173,17 +173,15 @@ export class TabService {
       throw new BadRequestException('Erro ao buscar comanda');
     }
   }
-  
-  async getTabBellById(id: string) {
 
+  async getTabBellById(id: string) {
     try {
-      
       const tab = await this.prisma.tab.findUnique({
         where: {
           id: id,
         },
         include: {
-          entity:true
+          entity: true,
         },
       });
 
@@ -200,21 +198,20 @@ export class TabService {
     }
   }
   async getEntityById(entityId: string) {
-    try{
-      const entity  = await this.prisma.entity.findUnique({
+    try {
+      const entity = await this.prisma.entity.findUnique({
         where: { id: entityId },
       });
-      if(!entity){
+      if (!entity) {
         return null;
       }
       return entity;
-    }catch (error) {
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
     }
-  
-}
+  }
 
   async getLasTabNumberTab() {
     try {
@@ -313,6 +310,7 @@ export class TabService {
         },
       };
     } catch (error) {
+      console.log(error);
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }

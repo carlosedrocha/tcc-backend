@@ -89,6 +89,7 @@ model Item {
   dishIngredients      DishIngredient[]
   itemOrders           ItemOrder[]
   stock                Stock?
+  disabled             Boolean          @default(false)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   deletedAt            DateTime?
@@ -127,6 +128,7 @@ model Dish {
   description     String?
   price           Float
   photoUrl        String?
+  disabled        Boolean          @default(false)
   categories      Category[]
   dishIngredients DishIngredient[]
   menus           Menu[]
