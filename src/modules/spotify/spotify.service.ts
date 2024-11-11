@@ -3,6 +3,7 @@ import {
   MusicInQueue,
   SimplifiedTrack,
 } from './types/spotify/response-type-songs';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const SpotifyWebApi = require('spotify-web-api-node');
 
 @Injectable()
@@ -19,15 +20,21 @@ export class SpotifyService {
   }
 
   // Gera a URL de autenticação para o Spotify
-  getAuthUrl(): string {
-    const scopes = [
-      'streaming',
-      'user-read-playback-state',
-      'user-modify-playback-state',
-      'user-read-currently-playing',
-    ];
+  async getAuthUrl() {
+    try {
+      const scopes = [
+        'streaming',
+        'user-read-playback-state',
+        'user-modify-playback-state',
+        'user-read-currently-playing',
+      ];
 
-    return this.spotifyApi.createAuthorizeURL(scopes);
+      const authUrl = this.spotifyApi.createAuthorizeURL(scopes);
+      console.log('URL de autenticação gerada:', authUrl);
+      return authUrl;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   // Autentica o usuário e troca o código pelo token de acesso
@@ -40,6 +47,7 @@ export class SpotifyService {
       console.log(data);
       this.spotifyApi.setAccessToken(accessToken);
       this.spotifyApi.setRefreshToken(refreshToken);
+      return accessToken;
     } catch (error) {
       console.error('Erro ao obter o token de acesso:', error);
     }

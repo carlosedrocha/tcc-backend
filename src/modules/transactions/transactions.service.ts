@@ -49,6 +49,7 @@ export class TransactionsService {
   }
   async getTransactions(filter: any) {
     try {
+      console.log('here');
       const { category, status, transactionType, startDate, endDate } = filter;
       return await this.prisma.transaction.findMany({
         where: {
