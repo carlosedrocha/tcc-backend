@@ -35,7 +35,7 @@ export class SpotifyController {
   async login(@Res() res) {
     const authUrl = this.spotifyService.getAuthUrl(); // Gera a URL de autenticação
     console.log(authUrl);
-    return res.redirect(authUrl); // Redireciona o cliente para essa URL
+    res.send(authUrl); // Redireciona o cliente para essa URL
   }
 
   @Post('queue/like/:id')
@@ -54,8 +54,10 @@ export class SpotifyController {
   @Get('callback')
   @Public()
   async callback(@Query('code') code: string, @Res() res) {
-    await this.spotifyService.handleCallback(code);
-    res.send('Login bem-sucedido! Agora você pode começar a usar a aplicação.');
+    const token = await this.spotifyService.handleCallback(code);
+    res.redirect(
+      'http://localhost:3000/dashboard/queue-spotify?token=' + token,
+    );
   }
 
   @Get('queue')
