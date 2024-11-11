@@ -47,4 +47,40 @@ export class TransactionsService {
       throw new BadRequestException('Erro ao atualizar transação');
     }
   }
+  async getTransactions(filter: any) {
+    try {
+      const { category, status, transactionType, startDate, endDate } = filter;
+      return await this.prisma.transaction.findMany({
+        where: {
+          category: category || undefined,
+          status: status || undefined,
+          transactionType: transactionType || undefined,
+          date: {
+            gte: startDate ? new Date(startDate) : undefined,
+            lte: endDate ? new Date(endDate) : undefined,
+          },
+        },
+        include: {
+          tab: true, // Include related tab information if needed
+          stockMovements: true, // Include stock movements for inventory impact
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Erro ao buscar transações');
+    }
+  }
+
+  async getAggregatedStatus() {
+    try {
+      return await this.prisma.transaction.groupBy({
+        by: ['status', 'transactionType'],
+        _sum: { amount: true },
+        _count: { id: true },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Erro ao buscar status das transações');
+    }
+  }
 }
