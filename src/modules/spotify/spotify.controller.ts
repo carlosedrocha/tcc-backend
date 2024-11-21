@@ -34,14 +34,8 @@ export class SpotifyController {
   }
   @Get('/login')
   async login(@Res() res) {
-<<<<<<< HEAD
     // Gera a URL de autenticação
     res.send(this.spotifyService.getAuthUrl()); // Redireciona o cliente para essa URL
-=======
-    const authUrl = this.spotifyService.getAuthUrl(); // Gera a URL de autenticação
-    console.log(authUrl);
-    res.send(authUrl); // Redireciona o cliente para essa URL
->>>>>>> 3c055ac9c05bd0e7772e086948760796cc289007
   }
 
   @Post('queue/like/:id')
