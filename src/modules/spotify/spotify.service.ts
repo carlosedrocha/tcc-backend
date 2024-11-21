@@ -3,6 +3,7 @@ import {
   MusicInQueue,
   SimplifiedTrack,
 } from './types/spotify/response-type-songs';
+import { Artifact } from 'aws-sdk';
 const SpotifyWebApi = require('spotify-web-api-node');
 
 @Injectable()
@@ -30,6 +31,57 @@ export class SpotifyService {
     return this.spotifyApi.createAuthorizeURL(scopes);
   }
 
+  async playMusicFromQueue(): Promise<void> {
+    while (this.musicQueue.length > 0) {
+      const nextTrack = this.musicQueue[0]; // Pega a próxima música da fila
+      try {
+        // Define a música para tocar
+        await this.spotifyApi.play({
+          uris: [nextTrack.url], // URL do Spotify da música
+        });
+
+        console.log(
+          `Reproduzindo agora: ${nextTrack.name} - ${nextTrack.albumName}`,
+        );
+        this.musicQueue.shift(); // Remove a música da fila após começar a reprodução
+
+        // Aguarda até a música atual terminar
+        await this.waitForTrackToFinish();
+      } catch (error) {
+        console.error('Erro ao iniciar a reprodução:', error);
+        break; // Para o loop se houver erro
+      }
+    }
+
+    console.log('A fila foi reproduzida completamente.');
+  }
+
+  private async waitForTrackToFinish(): Promise<void> {
+    try {
+      let isPlaying = true;
+
+      while (isPlaying) {
+        const playbackState = await this.spotifyApi.getMyCurrentPlaybackState();
+
+        if (playbackState.body && playbackState.body.is_playing) {
+          // Verifica o tempo restante da música
+          const progress = playbackState.body.progress_ms;
+          const duration = playbackState.body.item.duration_ms;
+
+          if (progress >= duration) {
+            isPlaying = false; // A música terminou
+          }
+        } else {
+          isPlaying = false; // Player pausado ou não reproduzindo
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Aguarda 1 segundo antes de verificar novamente
+      }
+    } catch (error) {
+      console.error('Erro ao verificar o estado de reprodução:', error);
+    }
+  }
+
   // Autentica o usuário e troca o código pelo token de acesso
   async handleCallback(code: string): Promise<void> {
     try {
@@ -37,9 +89,9 @@ export class SpotifyService {
       const data = await this.spotifyApi.authorizationCodeGrant(code);
       const accessToken = data.body['access_token'];
       const refreshToken = data.body['refresh_token'];
-      console.log(data);
       this.spotifyApi.setAccessToken(accessToken);
       this.spotifyApi.setRefreshToken(refreshToken);
+      return accessToken;
     } catch (error) {
       console.error('Erro ao obter o token de acesso:', error);
     }
@@ -64,11 +116,15 @@ export class SpotifyService {
 
     const result = await this.spotifyApi.searchTracks(trackName);
     const tracks = result.body.tracks.items;
+    console.log(result.body.tracks);
 
     // Mapeia os dados retornados para o formato simplificado
     return tracks.slice(0, 5).map((track) => ({
       id: track.id,
       name: track.name,
+      // artist: tracks.artists.forEach((artist) => {
+      //   artist.name; // Exibe o nome do artista
+      // }),
       albumName: track.album.name,
       durationMs: track.duration_ms,
       imageUrl:
@@ -78,8 +134,7 @@ export class SpotifyService {
   }
 
   startQueue() {
-    console.log('Iniciando verificação de fila...');
-    this.setupPlaybackCheck();
+    this.playMusicFromQueue();
   }
 
   async addMusicToSpotifyQueue(trackUri: string): Promise<void> {
