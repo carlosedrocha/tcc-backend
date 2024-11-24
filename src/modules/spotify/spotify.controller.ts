@@ -19,6 +19,7 @@ export class SpotifyController {
   constructor(private readonly spotifyService: SpotifyService) {}
 
   @Get('/search/:song')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async getMusic(@Param('song') song: string) {
     return await this.spotifyService.searchTracks(song);
@@ -53,9 +54,8 @@ export class SpotifyController {
   @Public()
   async callback(@Query('code') code: string, @Res() res) {
     const token = await this.spotifyService.handleCallback(code);
-    res.redirect(
-      'http://localhost:3000/dashboard/queue-spotify?token=' + token,
-    );
+    const redirectUrl = `http://localhost:3000/dashboard/queue-spotify?token=${token}`;
+    res.redirect(redirectUrl);
   }
 
   @Get('queue')
