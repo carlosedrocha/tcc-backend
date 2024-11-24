@@ -3,7 +3,7 @@ import {
   MusicInQueue,
   SimplifiedTrack,
 } from './types/spotify/response-type-songs';
-import { Artifact } from 'aws-sdk';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const SpotifyWebApi = require('spotify-web-api-node');
 
 @Injectable()
@@ -20,15 +20,21 @@ export class SpotifyService {
   }
 
   // Gera a URL de autenticação para o Spotify
-  getAuthUrl(): string {
-    const scopes = [
-      'streaming',
-      'user-read-playback-state',
-      'user-modify-playback-state',
-      'user-read-currently-playing',
-    ];
+  async getAuthUrl() {
+    try {
+      const scopes = [
+        'streaming',
+        'user-read-playback-state',
+        'user-modify-playback-state',
+        'user-read-currently-playing',
+      ];
 
-    return this.spotifyApi.createAuthorizeURL(scopes);
+      const authUrl = this.spotifyApi.createAuthorizeURL(scopes);
+      console.log('URL de autenticação gerada:', authUrl);
+      return authUrl;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async playMusicFromQueue(): Promise<void> {
@@ -110,27 +116,28 @@ export class SpotifyService {
   }
 
   async searchTracks(trackName: string): Promise<SimplifiedTrack[]> {
-    if (!trackName || trackName.trim() === '') {
-      throw new Error('Search query cannot be empty');
+    try {
+      if (!trackName || trackName.trim() === '') {
+        throw new Error('Search query cannot be empty');
+      }
+
+      const result = await this.spotifyApi.searchTracks(trackName);
+      const tracks = result.body.tracks.items;
+
+      // Mapeia os dados retornados para o formato simplificado
+      return tracks.slice(0, 5).map((track) => ({
+        id: track.id,
+        name: track.name,
+        albumName: track.album.name,
+        durationMs: track.duration_ms,
+        imageUrl:
+          track.album.images.length > 0 ? track.album.images[0].url : null,
+        url: track.external_urls.spotify, // URL pública da música no Spotify
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar músicas:', error);
+      return [];
     }
-
-    const result = await this.spotifyApi.searchTracks(trackName);
-    const tracks = result.body.tracks.items;
-    console.log(result.body.tracks);
-
-    // Mapeia os dados retornados para o formato simplificado
-    return tracks.slice(0, 5).map((track) => ({
-      id: track.id,
-      name: track.name,
-      // artist: tracks.artists.forEach((artist) => {
-      //   artist.name; // Exibe o nome do artista
-      // }),
-      albumName: track.album.name,
-      durationMs: track.duration_ms,
-      imageUrl:
-        track.album.images.length > 0 ? track.album.images[0].url : null,
-      url: track.external_urls.spotify, // URL pública da música no Spotify
-    }));
   }
 
   startQueue() {
