@@ -15,7 +15,6 @@ export class LoggingMiddleware implements NestMiddleware {
     if (authHeader) {
       const token = authHeader.split(' ')[1]; // Extract the token from 'Bearer <token>'
       userId = getUserIdFromToken(token); // Call the helper function with the secret
-      console.log(`userId`, userId); // Log the userId
     }
 
     const start = Date.now();
