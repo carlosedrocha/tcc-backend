@@ -55,14 +55,8 @@ export class SpotifyController {
   @Public()
   async callback(@Query('code') code: string, @Res() res) {
     const token = await this.spotifyService.handleCallback(code);
-<<<<<<< HEAD
     const redirectUrl = `http://localhost:3000/dashboard/queue-spotify?token=${token}`;
     res.redirect(redirectUrl);
-=======
-    res.redirect(
-      'http://localhost:3000/dashboard/queue-spotify?token=' + token,
-    );
->>>>>>> 3c055ac9c05bd0e7772e086948760796cc289007
   }
 
   @Get('queue')
