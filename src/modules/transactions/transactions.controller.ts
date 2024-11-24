@@ -14,4 +14,14 @@ export class TransactionsController {
   async getTransactions(@Query() filter: any) {
     return this.transactionsService.getTransactions(filter);
   }
+
+  @Get('current-month-expenses')
+  async getCurrentMonthExpenses() {
+    return this.transactionsService.getCurrentMonthExpenses();
+  }
+
+  @Get('current-month-income')
+  async getCurrentMonthRevenue() {
+    return this.transactionsService.getCurrentMonthIncome();
+  }
 }

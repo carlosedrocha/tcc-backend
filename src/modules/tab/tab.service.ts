@@ -288,7 +288,7 @@ export class TabService {
         paymentMethod: 'CREDIT_CARD',
         status: 'PAID',
         tabId: id,
-        type: 'SALE',
+        type: 'INCOME',
         description: 'Pagamento da Comanda ' + tab.tabNumber,
       };
 

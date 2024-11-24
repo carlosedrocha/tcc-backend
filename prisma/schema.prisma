@@ -299,10 +299,9 @@ model Log {
 }
 
 enum TransactionType {
-  SALE // Vendas
+  // SALE // Vendas
   EXPENSE // Despesas
   INCOME // Recebimentos
-  PAYMENT // Pagamentos
 }
 
 enum TransactionPaymentMethod {

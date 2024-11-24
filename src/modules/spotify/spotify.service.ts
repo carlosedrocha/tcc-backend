@@ -66,23 +66,28 @@ export class SpotifyService {
   }
 
   async searchTracks(trackName: string): Promise<SimplifiedTrack[]> {
-    if (!trackName || trackName.trim() === '') {
-      throw new Error('Search query cannot be empty');
+    try {
+      if (!trackName || trackName.trim() === '') {
+        throw new Error('Search query cannot be empty');
+      }
+
+      const result = await this.spotifyApi.searchTracks(trackName);
+      const tracks = result.body.tracks.items;
+
+      // Mapeia os dados retornados para o formato simplificado
+      return tracks.slice(0, 5).map((track) => ({
+        id: track.id,
+        name: track.name,
+        albumName: track.album.name,
+        durationMs: track.duration_ms,
+        imageUrl:
+          track.album.images.length > 0 ? track.album.images[0].url : null,
+        url: track.external_urls.spotify, // URL pública da música no Spotify
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar músicas:', error);
+      return [];
     }
-
-    const result = await this.spotifyApi.searchTracks(trackName);
-    const tracks = result.body.tracks.items;
-
-    // Mapeia os dados retornados para o formato simplificado
-    return tracks.slice(0, 5).map((track) => ({
-      id: track.id,
-      name: track.name,
-      albumName: track.album.name,
-      durationMs: track.duration_ms,
-      imageUrl:
-        track.album.images.length > 0 ? track.album.images[0].url : null,
-      url: track.external_urls.spotify, // URL pública da música no Spotify
-    }));
   }
 
   startQueue() {

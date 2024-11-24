@@ -24,6 +24,7 @@ import { TabModule } from './modules/tab/tab.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { UserModule } from './modules/user/user.module';
 import { SpotifyModule } from './modules/spotify/spotify.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { SpotifyModule } from './modules/spotify/spotify.module';
     WaiterBellModule,
     LogModule,
     SpotifyModule,
+    DashboardModule,
   ],
   providers: [
     {
