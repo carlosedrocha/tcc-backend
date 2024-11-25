@@ -90,6 +90,7 @@ model Item {
   itemOrders           ItemOrder[]
   section              Section[]
   stock                Stock?
+  menus                Menu[]
   disabled             Boolean          @default(false)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
@@ -133,6 +134,7 @@ model Dish {
   categories      Category[]
   dishIngredients DishIngredient[]
   dishOrders      DishOrder[]
+  menu            Menu[]
   recipe          String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -145,6 +147,8 @@ model Menu {
   id          String    @id @default(uuid())
   name        String
   sections    Section[] // Relacionamento com seções
+  dishes      Dish[]
+  items       Item[]
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -314,10 +318,9 @@ model Log {
 }
 
 enum TransactionType {
-  SALE // Vendas
+  // SALE // Vendas
   EXPENSE // Despesas
   INCOME // Recebimentos
-  PAYMENT // Pagamentos
 }
 
 enum TransactionPaymentMethod {

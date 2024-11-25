@@ -11,11 +11,8 @@ import {
 } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
 
-import {
-  SimplifiedTrack,
-  MusicInQueue,
-} from './types/spotify/response-type-songs';
 import { Public } from 'src/common/decorators';
+import { SimplifiedTrack } from './types/spotify/response-type-songs';
 
 @Controller('spotify')
 export class SpotifyController {
@@ -32,10 +29,12 @@ export class SpotifyController {
   addMusic(@Body() track: SimplifiedTrack): void {
     this.spotifyService.addMusicToQueue(track);
   }
+
   @Get('/login')
   async login(@Res() res) {
-    // Gera a URL de autenticação
-    res.send(this.spotifyService.getAuthUrl()); // Redireciona o cliente para essa URL
+    const authUrl = await this.spotifyService.getAuthUrl(); // Gera a URL de autenticação
+    console.log(authUrl);
+    res.send(authUrl); // Redireciona o cliente para essa URL
   }
 
   @Post('queue/like/:id')

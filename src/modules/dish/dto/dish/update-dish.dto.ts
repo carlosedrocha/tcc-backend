@@ -1,4 +1,10 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateDishDto {
   @IsOptional()
@@ -24,4 +30,8 @@ export class UpdateDishDto {
   @IsOptional()
   @IsArray()
   itemsIds?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  disabled?: boolean;
 }

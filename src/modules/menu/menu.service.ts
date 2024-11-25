@@ -42,6 +42,7 @@ export class MenuService {
           sections: {
             include: {
               dishes: true,
+              items: true,
             },
           },
         },

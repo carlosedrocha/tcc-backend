@@ -24,8 +24,9 @@ import { TabModule } from './modules/tab/tab.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { UserModule } from './modules/user/user.module';
 import { SpotifyModule } from './modules/spotify/spotify.module';
-import { SectionController } from './modules/section/section.controller';
+
 import { SectionModule } from './modules/section/section.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SectionModule } from './modules/section/section.module';
     LogModule,
     SpotifyModule,
     SectionModule,
+    DashboardModule,
   ],
   providers: [
     {
