@@ -30,8 +30,8 @@ export class MenuController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createManu(@Body() dto: CreateMenuDto) {
-    return this.menuService.createManu(dto);
+  async createMenu(@Body() dto: CreateMenuDto) {
+    return this.menuService.createMenu(dto);
   }
 
   @Put('/:id')

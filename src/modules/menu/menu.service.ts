@@ -16,9 +16,14 @@ export class MenuService {
         where: {
           deletedAt: null,
         },
-        include:{
-          dishes:true,
-        }
+        include: {
+          sections: {
+            include: {
+              dishes: true,
+              items: true,
+            },
+          },
+        },
       });
 
       return menus;
@@ -32,35 +37,57 @@ export class MenuService {
       const menu = await this.prisma.menu.findUnique({
         where: {
           id: id,
-          deletedAt: null,
         },
-        include:{
-          dishes:true,
-        }
+        include: {
+          sections: {
+            include: {
+              dishes: true,
+            },
+          },
+        },
       });
 
-      if (!menu) {
+      if (!menu || menu.deletedAt) {
         throw new NotFoundException('Menu não encontrado');
       }
 
       return menu;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      }
-
       throw new BadRequestException('Erro ao buscar menu');
     }
   }
 
-  async createManu(dto: CreateMenuDto) {
+  // Alteração aqui
+  async createMenu(dto: CreateMenuDto) {
     try {
+      // Buscar as seções pelo ID
+      const sections = await this.prisma.section.findMany({
+        where: {
+          id: {
+            in: dto.sections.flatMap((section) => section.id), // Use flatMap para garantir que seja um array de strings
+          },
+        },
+      });
+
+      // Verificar se todas as seções foram encontradas
+      if (sections.length !== dto.sections.length) {
+        throw new NotFoundException('Uma ou mais seções não foram encontradas');
+      }
+
+      // Criar o menu com as seções associadas
       const menu = await this.prisma.menu.create({
         data: {
           name: dto.name,
           description: dto.description,
-          dishes: {
-            connect: dto.dishIds.map((id) => ({ id })),
+          sections: {
+            connect: sections.map((section) => ({ id: section.id })),
+          },
+        },
+        include: {
+          sections: {
+            include: {
+              dishes: true,
+            },
           },
         },
       });
@@ -71,8 +98,24 @@ export class MenuService {
     }
   }
 
+  // Alteração aqui
   async updateMenu(id: string, dto: UpdateMenuDto) {
     try {
+      // Buscar as seções pelo ID para garantir que existam
+      const sections = await this.prisma.section.findMany({
+        where: {
+          id: {
+            in: dto.sections.map((section) => section.id),
+          },
+        },
+      });
+
+      // Verificar se todas as seções foram encontradas
+      if (sections.length !== dto.sections.length) {
+        throw new NotFoundException('Uma ou mais seções não foram encontradas');
+      }
+
+      // Atualizar o menu com as seções associadas
       const menu = await this.prisma.menu.update({
         where: {
           id: id,
@@ -80,8 +123,17 @@ export class MenuService {
         data: {
           name: dto.name,
           description: dto.description,
-          dishes: {
-            connect: dto.dishIds.map((id) => ({ id })),
+          sections: dto.sections
+            ? {
+                connect: sections.map((section) => ({ id: section.id })),
+              }
+            : undefined,
+        },
+        include: {
+          sections: {
+            include: {
+              dishes: true,
+            },
           },
         },
       });

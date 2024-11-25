@@ -88,6 +88,7 @@ model Item {
   measurementUnitValue Float? // Quantidade por unidade de medida
   dishIngredients      DishIngredient[]
   itemOrders           ItemOrder[]
+  section              Section[]
   stock                Stock?
   disabled             Boolean          @default(false)
   createdAt            DateTime         @default(now())
@@ -131,24 +132,38 @@ model Dish {
   disabled        Boolean          @default(false)
   categories      Category[]
   dishIngredients DishIngredient[]
-  menus           Menu[]
   dishOrders      DishOrder[]
   recipe          String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
+
+  Section Section[]
 }
 
 model Menu {
   id          String    @id @default(uuid())
   name        String
-  dishes      Dish[]
+  sections    Section[] // Relacionamento com seções
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
   @@map("menus")
+}
+
+model Section {
+  id        String    @id @default(uuid())
+  name      String // Nome da seção, como "Entradas" ou "Sobremesas"
+  menu       Menu[]
+  items     Item[]
+  dishes    Dish[] // Relacionamento com pratos
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map("sections")
 }
 
 model Role {
