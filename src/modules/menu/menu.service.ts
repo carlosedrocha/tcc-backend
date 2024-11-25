@@ -184,6 +184,7 @@ export class MenuService {
 
       return menu;
     } catch (error) {
+      console.log(error);
       throw new BadRequestException('Erro ao buscar menu');
     }
   }
