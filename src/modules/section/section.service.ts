@@ -114,6 +114,7 @@ export class SectionService {
         where: { id },
         data: {
           name: dto.name,
+          disabled: dto.disabled,
           menu: {
             connect: dto.menuIds?.map((id) => ({ id })) || [], // Atualiza menus associados
           },

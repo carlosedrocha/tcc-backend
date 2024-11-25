@@ -149,6 +149,7 @@ model Menu {
   sections    Section[] // Relacionamento com seções
   dishes      Dish[]
   items       Item[]
+  disabled    Boolean   @default(false)
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -160,9 +161,10 @@ model Menu {
 model Section {
   id        String    @id @default(uuid())
   name      String // Nome da seção, como "Entradas" ou "Sobremesas"
-  menu       Menu[]
+  menu      Menu[]
   items     Item[]
   dishes    Dish[] // Relacionamento com pratos
+  disabled  Boolean   @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?

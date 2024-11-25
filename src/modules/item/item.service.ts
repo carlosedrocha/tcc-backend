@@ -117,6 +117,7 @@ export class ItemService {
           cost: dto.cost,
           measurementUnit: dto.measurementUnit,
           measurementUnitValue: dto.measurementUnitValue,
+          disabled: dto.disabled,
           type: {
             connect: {
               id: dto.typeId,

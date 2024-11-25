@@ -16,4 +16,7 @@ export class UpdateSectionDto {
   @IsOptional()
   @IsArray()
   itemIds?: string[];
+
+  @IsOptional()
+  disabled?: boolean;
 }

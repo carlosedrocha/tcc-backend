@@ -1,11 +1,5 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 class UpdateSectionDto {
   @IsOptional()
@@ -30,6 +24,9 @@ export class UpdateMenuDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  disabled?: boolean;
 
   @IsOptional()
   @IsArray()

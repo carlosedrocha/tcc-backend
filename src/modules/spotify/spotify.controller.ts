@@ -11,15 +11,16 @@ import {
 } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
 
-import { Public } from 'src/common/decorators';
+import { isPublic } from 'src/common/decorators';
 import { SimplifiedTrack } from './types/spotify/response-type-songs';
+import { Public } from '@prisma/client/runtime/library';
 
 @Controller('spotify')
 export class SpotifyController {
   constructor(private readonly spotifyService: SpotifyService) {}
 
   @Get('/search/:song')
-  @Public()
+  @isPublic()
   @HttpCode(HttpStatus.OK)
   async getMusic(@Param('song') song: string) {
     return await this.spotifyService.searchTracks(song);
@@ -51,7 +52,7 @@ export class SpotifyController {
   }
 
   @Get('callback')
-  @Public()
+  @isPublic()
   async callback(@Query('code') code: string, @Res() res) {
     const token = await this.spotifyService.handleCallback(code);
     const redirectUrl = `http://localhost:3000/dashboard/queue-spotify?token=${token}`;

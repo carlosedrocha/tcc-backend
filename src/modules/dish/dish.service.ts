@@ -134,6 +134,7 @@ export class DishService {
           description: dto.description,
           price: dto.price,
           photoUrl: dto.photoUrl,
+          disabled: dto.disabled,
           ...(dto.categoriesIds && {
             categories: {
               connect: dto.categoriesIds

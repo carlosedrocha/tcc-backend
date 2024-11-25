@@ -73,6 +73,7 @@ export class TransactionsService {
           tab: true, // Include related tab information if needed
           stockMovements: true, // Include stock movements for inventory impact
         },
+        orderBy: { createdAt: 'desc' },
       });
     } catch (error) {
       console.log(error);

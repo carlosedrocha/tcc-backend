@@ -1,1 +1,1 @@
-export { Public } from './public/public.decorator';
+export { isPublic } from './public/public.decorator';

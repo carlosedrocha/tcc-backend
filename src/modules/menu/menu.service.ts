@@ -124,6 +124,7 @@ export class MenuService {
         data: {
           name: dto.name,
           description: dto.description,
+          // disabled: dto.disabled,
           sections: dto.sections
             ? {
                 connect: sections.map((section) => ({ id: section.id })),
@@ -157,6 +158,33 @@ export class MenuService {
       });
     } catch (error) {
       throw new BadRequestException('Erro ao deletar menu');
+    }
+  }
+
+  async getActiveMenu() {
+    try {
+      const menu = await this.prisma.menu.findFirst({
+        where: {
+          deletedAt: null,
+          disabled: false,
+        },
+        include: {
+          sections: {
+            include: {
+              dishes: true,
+              items: true,
+            },
+          },
+        },
+      });
+
+      if (!menu) {
+        throw new NotFoundException('Menu não encontrado');
+      }
+
+      return menu;
+    } catch (error) {
+      throw new BadRequestException('Erro ao buscar menu');
     }
   }
 }
