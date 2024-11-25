@@ -20,5 +20,10 @@ export class AuthController {
     return this.authService.localSignIn(dto);
   }
 
-  
+  @isPublic()
+  @Post('customer/local/signup')
+  @HttpCode(HttpStatus.CREATED)
+  async customerLocalSignUp(@Body() dto: CreateUserDto) {
+    return this.authService.customerLocalSignUp(dto);
+  }
 }
