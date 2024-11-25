@@ -28,7 +28,18 @@ export class KanbanService {
 
   // Pega todos os pedidos (útil para visualizar no Kanban)
   async getAllOrders() {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
     return this.prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
       select: {
         id: true,
         status: true,

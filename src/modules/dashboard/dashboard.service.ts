@@ -16,40 +16,44 @@ export class DashboardService {
       const data = [];
 
       for (let i = 5; i >= 0; i--) {
+        // Calcula o início e fim de cada mês
         const monthStart = startOfMonth(subMonths(currentDate, i));
         const monthEnd = endOfMonth(subMonths(currentDate, i));
         const monthName = format(monthStart, 'MMMM');
 
-        // Total Revenue
-        const totalRevenue = await this.prisma.transaction.aggregate({
-          where: {
-            transactionType: 'INCOME',
-            date: {
-              gte: monthStart,
-              lte: monthEnd,
+        // Consultas executadas em paralelo
+        const [totalRevenue, totalExpense] = await Promise.all([
+          // Receita total
+          this.prisma.transaction.aggregate({
+            where: {
+              transactionType: 'INCOME',
+              createdAt: {
+                gte: monthStart,
+                lte: monthEnd,
+              },
+              status: 'PAID',
             },
-            status: 'PAID',
-          },
-          _sum: {
-            amount: true,
-          },
-        });
-
-        // Total Expenses
-        const totalExpense = await this.prisma.transaction.aggregate({
-          where: {
-            transactionType: 'EXPENSE',
-            date: {
-              gte: monthStart,
-              lte: monthEnd,
+            _sum: {
+              amount: true,
             },
-            status: 'PAID',
-          },
-          _sum: {
-            amount: true,
-          },
-        });
+          }),
+          // Despesa total
+          this.prisma.transaction.aggregate({
+            where: {
+              transactionType: 'EXPENSE',
+              createdAt: {
+                gte: monthStart,
+                lte: monthEnd,
+              },
+              status: 'PAID',
+            },
+            _sum: {
+              amount: true,
+            },
+          }),
+        ]);
 
+        // Adiciona os dados do mês atual no array
         data.push({
           month: monthName,
           income: totalRevenue._sum.amount || 0,

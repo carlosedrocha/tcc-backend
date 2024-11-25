@@ -294,7 +294,7 @@ export class TabService {
 
       if (chancesOfSuccess < 0.2) {
         throw new BadRequestException(
-          'Erro ao processar pagamento, tente novamente',
+          'Pagamento não Aprovado, tente novamente',
         );
       }
       const processTransaction = await this.transaction.createTransaction(

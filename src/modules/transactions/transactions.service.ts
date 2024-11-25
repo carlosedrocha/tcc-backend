@@ -130,7 +130,7 @@ export class TransactionsService {
       const totalExpense = await this.prisma.transaction.aggregate({
         where: {
           transactionType: 'EXPENSE', // Considera apenas despesas
-          date: {
+          createdAt: {
             gte: startDate,
             lte: endDate,
           },

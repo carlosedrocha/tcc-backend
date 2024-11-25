@@ -69,9 +69,9 @@ async function main() {
     { name: 'stock:register', roleId: managerRole.id },
     { name: 'stock:read', roleId: managerRole.id },
     { name: 'stock:delete', roleId: managerRole.id },
-    { name: 'waiter-bell:register', roleId: waiterRole.id },
-    { name: 'waiter-bell:read', roleId: waiterRole.id },
-    { name: 'waiter-bell:delete', roleId: waiterRole.id },
+    { name: 'waiter-bell:register', roleId: managerRole.id },
+    { name: 'waiter-bell:read', roleId: managerRole.id },
+    { name: 'waiter-bell:delete', roleId: managerRole.id },
   ];
   const waiterPermissionsList = [
     { name: 'menu:read', roleId: waiterRole.id },
@@ -94,11 +94,11 @@ async function main() {
     { name: 'menu:read', roleId: clientRole.id },
     { name: 'order:register', roleId: clientRole.id },
     { name: 'order:read', roleId: clientRole.id },
-    { name: 'spotify:register', roleId: managerRole.id },
-    { name: 'spotify:read', roleId: managerRole.id },
-    { name: 'waiter-bell:register', roleId: waiterRole.id },
-    { name: 'waiter-bell:read', roleId: waiterRole.id },
-    { name: 'waiter-bell:delete', roleId: waiterRole.id },
+    { name: 'spotify:register', roleId: clientRole.id },
+    // { name: 'spotify:read', roleId: managerRole.id },
+    { name: 'waiter-bell:register', roleId: clientRole.id },
+    { name: 'waiter-bell:read', roleId: clientRole.id },
+    { name: 'waiter-bell:delete', roleId: clientRole.id },
   ];
   const allPermissionsList = [
     ...managerPermissionsList,
@@ -981,13 +981,13 @@ async function main() {
         quantity: isIncrease ? randomQuantity : randomQuantity,
         movementType: 'ENTRY',
         description: `${
-          isIncrease ? 'Entrada' : 'Saída'
+          isIncrease ? 'Entrada' : 'Entrada'
         } simulada para o item ${item.name}`,
         transaction: {
           amount: Math.abs(randomQuantity * item.cost), // Valor absoluto para evitar números negativos
           category: 'STOCK',
           description: `Movimentação simulada de ${
-            isIncrease ? 'entrada' : 'saída'
+            isIncrease ? 'entrada' : 'entrada'
           } para o item ${item.name}`,
           paymentMethod: isIncrease ? 'CREDIT_CARD' : 'CASH',
           type: 'EXPENSE',
@@ -1011,6 +1011,18 @@ async function main() {
 
           let transaction;
           if (dto.transaction) {
+            const now = new Date();
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+            // Generate a random timestamp between sixMonthsAgo and now
+            const randomTimestamp =
+              sixMonthsAgo.getTime() +
+              Math.random() * (now.getTime() - sixMonthsAgo.getTime());
+
+            // Create the random date
+            const createdAt = new Date(randomTimestamp);
+
             transaction = await prisma.transaction.create({
               data: {
                 amount: dto.transaction.amount,
@@ -1019,6 +1031,7 @@ async function main() {
                 paymentMethod: dto.transaction.paymentMethod,
                 transactionType: dto.transaction.type,
                 status: dto.transaction.status,
+                createdAt: createdAt,
               },
             });
           }
@@ -1053,7 +1066,7 @@ async function main() {
         await addStockEntry(stock.id, stockEntryDto);
         console.log(
           `Movimentação ${
-            isIncrease ? 'Entrada' : 'Saída'
+            isIncrease ? 'Entrada' : 'Entrada'
           } registrada para o item: ${item.name} | Quantidade: ${
             stockEntryDto.quantity
           }`,
@@ -1067,6 +1080,153 @@ async function main() {
       console.log('Seed rodada com sucesso');
     }
   }
+
+  const customerUser2 = await prisma.user.create({
+    data: {
+      email: 'vitor.teste@gmail.com',
+      hashedPassword:
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
+      entity: {
+        create: {
+          firstName: 'Vitor',
+          lastName: 'Silva',
+          cpf: '71454767030',
+        },
+      },
+    },
+    include: { entity: true },
+  });
+
+  const customerUser3 = await prisma.user.create({
+    data: {
+      email: 'pedro.luis@gmail.com',
+      hashedPassword:
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
+      entity: {
+        create: {
+          firstName: 'Pedro',
+          lastName: 'Luis',
+          cpf: '71454767031',
+        },
+      },
+    },
+    include: { entity: true },
+  });
+
+  const customerUser4 = await prisma.user.create({
+    data: {
+      email: 'maria.vitoria@gmail.com',
+      hashedPassword:
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
+      entity: {
+        create: {
+          firstName: 'Maria',
+          lastName: 'Vitoria',
+          cpf: '71454767230',
+        },
+      },
+    },
+    include: { entity: true },
+  });
+
+  const customerUser5 = await prisma.user.create({
+    data: {
+      email: 'joao.pedro@gmail.com',
+      hashedPassword:
+        '$2b$10$1vFrYGPBJKRdEH7zhNnhAuWhEI71MbLcOendwadNkVni.H4qRTaEi',
+      entity: {
+        create: {
+          firstName: 'Joao',
+          lastName: 'Pedro',
+          cpf: '61444767231',
+        },
+      },
+    },
+    include: { entity: true },
+  });
+
+  // create some tabs and orders
+  const createTab1 = await prisma.tab.create({
+    data: {
+      tabNumber: 1,
+      status: 'OPEN',
+      userId: adminUser.id,
+      entityId: customerUser2.entity.id,
+      orders: {
+        create: [
+          {
+            dishesOrder: {
+              create: { dishId: createDish1.id, quantity: 1 },
+            },
+          },
+          {
+            dishesOrder: { create: { dishId: createDish2.id, quantity: 1 } },
+          },
+        ],
+      },
+    },
+  });
+
+  const createTab2 = await prisma.tab.create({
+    data: {
+      tabNumber: 2,
+      status: 'OPEN',
+      userId: adminUser.id,
+      entityId: customerUser3.entity.id,
+      orders: {
+        create: [
+          {
+            dishesOrder: {
+              create: { dishId: createDish3.id, quantity: 1 },
+            },
+          },
+          {
+            dishesOrder: { create: { dishId: createDish4.id, quantity: 1 } },
+          },
+        ],
+      },
+    },
+  });
+
+  const createTab3 = await prisma.tab.create({
+    data: {
+      tabNumber: 3,
+      status: 'OPEN',
+      userId: adminUser.id,
+      entityId: customerUser4.entity.id,
+      orders: {
+        create: [
+          {
+            dishesOrder: { create: { dishId: createDish5.id, quantity: 1 } },
+          },
+          {
+            dishesOrder: { create: { dishId: createDish6.id, quantity: 1 } },
+          },
+        ],
+      },
+    },
+  });
+
+  const createTab4 = await prisma.tab.create({
+    data: {
+      tabNumber: 4,
+      status: 'OPEN',
+      userId: adminUser.id,
+      entityId: customerUser5.entity.id,
+      orders: {
+        create: [
+          {
+            dishesOrder: { create: { dishId: createDish8.id, quantity: 1 } },
+          },
+          {
+            dishesOrder: { create: { dishId: createDish9.id, quantity: 1 } },
+          },
+        ],
+      },
+    },
+  });
+
+  console.log('Seed rodada com sucesso');
 }
 main()
   .then(async () => {
