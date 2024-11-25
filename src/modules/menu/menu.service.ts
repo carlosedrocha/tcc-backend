@@ -83,6 +83,7 @@ export class MenuService {
           sections: {
             connect: sections.map((section) => ({ id: section.id })),
           },
+          disabled: false,
         },
         include: {
           sections: {
@@ -102,11 +103,12 @@ export class MenuService {
   // Alteração aqui
   async updateMenu(id: string, dto: UpdateMenuDto) {
     try {
+      console.log(dto);
       // Buscar as seções pelo ID para garantir que existam
       const sections = await this.prisma.section.findMany({
         where: {
           id: {
-            in: dto.sections.map((section) => section.id),
+            in: dto.sections.map((section) => section),
           },
         },
       });
@@ -130,6 +132,7 @@ export class MenuService {
                 connect: sections.map((section) => ({ id: section.id })),
               }
             : undefined,
+          disabled: dto.disabled,
         },
         include: {
           sections: {
