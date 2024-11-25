@@ -1,4 +1,26 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+class UpdateSectionDto {
+  @IsOptional()
+  @IsString()
+  id?: string; // O ID é opcional para identificar seções existentes
+
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  dishIds?: string[];
+}
 
 export class UpdateMenuDto {
   @IsOptional()
@@ -11,5 +33,7 @@ export class UpdateMenuDto {
 
   @IsOptional()
   @IsArray()
-  dishIds?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => UpdateSectionDto)
+  sections?: UpdateSectionDto[];
 }

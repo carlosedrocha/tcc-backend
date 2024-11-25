@@ -11,7 +11,7 @@ import { ItemTypeModule } from './modules/item-type/item-type.module';
 import { ItemModule } from './modules/item/item.module';
 import { KanbanModule } from './modules/kanban/kanban.module';
 import { WaiterBellModule } from './modules/waiter-bell/waiter-bell.module';
-import {WaiterBellGateway} from './modules/waiter-bell/waiter-bell.gateway';
+import { WaiterBellGateway } from './modules/waiter-bell/waiter-bell.gateway';
 import { LogModule } from './modules/log/log.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { OrderModule } from './modules/order/order.module';
@@ -24,6 +24,8 @@ import { TabModule } from './modules/tab/tab.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { UserModule } from './modules/user/user.module';
 import { SpotifyModule } from './modules/spotify/spotify.module';
+
+import { SectionModule } from './modules/section/section.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
@@ -50,14 +52,14 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     WaiterBellModule,
     LogModule,
     SpotifyModule,
+    SectionModule,
     DashboardModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
-    }, 
-    
+    },
   ],
 })
 export class AppModule {}

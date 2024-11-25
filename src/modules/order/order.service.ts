@@ -40,9 +40,9 @@ export class OrderService {
 
   async getOrderById(id: string) {
     try {
-      const order = await this.prisma.order.findUnique({
+      const order = await this.prisma.order.findMany({
         where: {
-          id,
+          tabId: id, // Busca pela coluna tabId diretamente
         },
         include: {
           itemsOrder: {

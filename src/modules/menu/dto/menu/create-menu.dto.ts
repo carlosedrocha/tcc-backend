@@ -1,4 +1,17 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+class CreateSectionDto {
+  @IsNotEmpty()
+  @IsString()
+  id: string[];
+}
 
 export class CreateMenuDto {
   @IsNotEmpty()
@@ -11,5 +24,7 @@ export class CreateMenuDto {
 
   @IsNotEmpty()
   @IsArray()
-  dishIds: string[];
+  @ValidateNested({ each: true })
+  @Type(() => CreateSectionDto)
+  sections: CreateSectionDto[];
 }
