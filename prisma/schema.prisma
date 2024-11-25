@@ -89,6 +89,7 @@ model Item {
   dishIngredients      DishIngredient[]
   itemOrders           ItemOrder[]
   stock                Stock?
+  menus                Menu[]
   disabled             Boolean          @default(false)
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
@@ -143,6 +144,7 @@ model Menu {
   id          String    @id @default(uuid())
   name        String
   dishes      Dish[]
+  items       Item[]
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

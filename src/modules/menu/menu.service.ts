@@ -16,9 +16,9 @@ export class MenuService {
         where: {
           deletedAt: null,
         },
-        include:{
-          dishes:true,
-        }
+        include: {
+          dishes: true,
+        },
       });
 
       return menus;
@@ -34,9 +34,9 @@ export class MenuService {
           id: id,
           deletedAt: null,
         },
-        include:{
-          dishes:true,
-        }
+        include: {
+          dishes: true,
+        },
       });
 
       if (!menu) {

@@ -45,6 +45,4 @@ export class DishController {
   async getDishById(@Param('id') id: string) {
     return this.dishService.getDishById(id);
   }
-
-  
 }

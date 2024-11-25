@@ -23,7 +23,7 @@ export class DashboardService {
         // Total Revenue
         const totalRevenue = await this.prisma.transaction.aggregate({
           where: {
-            transactionType: 'SALE',
+            transactionType: 'INCOME',
             date: {
               gte: monthStart,
               lte: monthEnd,

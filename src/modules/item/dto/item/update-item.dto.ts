@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateItemDto {
   @IsOptional()
@@ -24,4 +24,8 @@ export class UpdateItemDto {
   @IsOptional()
   @IsString()
   typeId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  disabled?: boolean;
 }

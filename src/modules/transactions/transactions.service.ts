@@ -159,7 +159,7 @@ export class TransactionsService {
 
       const totalRevenue = await this.prisma.transaction.aggregate({
         where: {
-          transactionType: 'SALE',
+          transactionType: 'INCOME',
           date: {
             gte: startDate,
             lte: endDate,
@@ -173,7 +173,7 @@ export class TransactionsService {
 
       const totalTransactions = await this.prisma.transaction.count({
         where: {
-          transactionType: 'SALE',
+          transactionType: 'INCOME',
           date: {
             gte: startDate,
             lte: endDate,
