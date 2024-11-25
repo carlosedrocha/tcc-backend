@@ -66,9 +66,12 @@ async function main() {
     { name: 'financial-report:read', roleId: managerRole.id },
     { name: 'financial-report:delete', roleId: managerRole.id },
     { name: 'financial-report:register', roleId: managerRole.id },
-    { name: 'stock-movement:register', roleId: managerRole.id },
-    { name: 'stock-movement:read', roleId: managerRole.id },
-    { name: 'stock-movement:delete', roleId: managerRole.id },
+    { name: 'stock:register', roleId: managerRole.id },
+    { name: 'stock:read', roleId: managerRole.id },
+    { name: 'stock:delete', roleId: managerRole.id },
+    { name: 'waiter-bell:register', roleId: waiterRole.id },
+    { name: 'waiter-bell:read', roleId: waiterRole.id },
+    { name: 'waiter-bell:delete', roleId: waiterRole.id },
   ];
   const waiterPermissionsList = [
     { name: 'menu:read', roleId: waiterRole.id },
@@ -79,6 +82,9 @@ async function main() {
     { name: 'order:delete', roleId: waiterRole.id },
     { name: 'kanban:register', roleId: waiterRole.id },
     { name: 'kanban:read', roleId: waiterRole.id },
+    { name: 'waiter-bell:register', roleId: waiterRole.id },
+    { name: 'waiter-bell:read', roleId: waiterRole.id },
+    { name: 'waiter-bell:delete', roleId: waiterRole.id },
   ];
   const chefPermissionList = [
     { name: 'kanban:register', roleId: chefRole.id },
@@ -90,6 +96,9 @@ async function main() {
     { name: 'order:read', roleId: clientRole.id },
     { name: 'spotify:register', roleId: managerRole.id },
     { name: 'spotify:read', roleId: managerRole.id },
+    { name: 'waiter-bell:register', roleId: waiterRole.id },
+    { name: 'waiter-bell:read', roleId: waiterRole.id },
+    { name: 'waiter-bell:delete', roleId: waiterRole.id },
   ];
   const allPermissionsList = [
     ...managerPermissionsList,
