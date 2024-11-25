@@ -20,6 +20,12 @@ export class OrderController {
     return this.orderService.getOrders();
   }
 
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  async getOrderById(@Param('id') id: string) {
+    return this.orderService.getOrderById(id);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createOrder(@Body() dto: CreateOrderDto) {
