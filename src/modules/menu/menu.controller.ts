@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { isPublic } from 'src/common/decorators/public/public.decorator';
+import { isPublic } from 'src/common/decorators';
 import { CreateMenuDto, UpdateMenuDto } from './dto';
 import { MenuService } from './menu.service';
 
@@ -48,9 +48,10 @@ export class MenuController {
   }
 
   @isPublic()
-  @Get('/active')
+  @Get('/current/active')
   @HttpCode(HttpStatus.OK)
   async getActiveMenus() {
+    console.log('getActiveMenus');
     return this.menuService.getActiveMenu();
   }
 }

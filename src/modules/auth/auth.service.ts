@@ -107,4 +107,48 @@ export class AuthService {
       throw new BadRequestException('Não foi possível criar o usuário');
     }
   }
+
+  async customerLocalSignUp(dto: CreateUserDto) {
+    try {
+      const checkEmail = await this.prisma.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      });
+
+      if (checkEmail) {
+        throw new BadRequestException('Email já existente');
+      }
+      const hashedPassword = await hashPassword(dto.password);
+
+      const clientRole = await this.prisma.role.findFirst({
+        where: {
+          name: 'client',
+        },
+      });
+
+      const user = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          hashedPassword: hashedPassword,
+          roleId: clientRole?.id ?? null,
+          entity: {
+            create: {
+              firstName: dto.firstName,
+              lastName: dto.lastName,
+              cpf: dto.cpf,
+            },
+          },
+        },
+      });
+
+      return user;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof BadRequestException)
+        throw new BadRequestException(error.message);
+
+      throw new BadRequestException('Não foi possível criar o usuário');
+    }
+  }
 }

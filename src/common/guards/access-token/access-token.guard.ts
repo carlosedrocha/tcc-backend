@@ -18,6 +18,8 @@ export class AccessTokenGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
+    // console.log('isPublic:', isPublic); // Debugging
+
     if (isPublic) {
       return true; // Allow access if the route is marked as public
     }
